@@ -17,7 +17,9 @@ function App() {
           <img src={logo} alt="logo" />
         </div>
         <div class="button-container">
-          <button class="btn-header btn-3">로그인</button>
+          <button className="btn-header btn-3" onClick={() => navigate('/login')}>
+            로그인
+          </button>
           <button class="btn-header btn-3">회원가입</button>
         </div>
       </div>
