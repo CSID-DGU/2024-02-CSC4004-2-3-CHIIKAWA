@@ -1,0 +1,193 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.mypage {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+}
+
+.mypage-title {
+    font-size: 24px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-section {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-bottom: 10px;
+}
+
+.profile-name {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.profile-username {
+    font-size: 14px;
+    color: #888;
+}
+
+
+/* 修改为纵向排列 */
+
+.mypage-options {
+    display: flex;
+    /* 使用弹性布局 */
+    flex-direction: column;
+    /* 设置为纵向排列 */
+    gap: 15px;
+    /* 方块之间的间距 */
+    list-style: none;
+    /* 去掉列表样式 */
+    padding: 0;
+    margin: 0;
+    align-items: center;
+    /* 居中排列（可选） */
+}
+
+.mypage-options li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-size: 16px;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    width: 80%;
+    /* 限制方块宽度 */
+    max-width: 400px;
+    /* 限制最大宽度 */
+}
+
+.mypage-options li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.basic-card {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 400px;
+    margin: 50px auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.profile-image {
+    border-radius: 50%;
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+.name {
+    font-size: 1.8rem;
+    font-weight: bold;
+}
+
+.title {
+    font-size: 1.2rem;
+    color: gray;
+    margin-bottom: 20px;
+}
+
+.stats {
+    margin-bottom: 20px;
+}
+
+.actions button {
+    margin: 5px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    border: none;
+    cursor: pointer;
+}
+
+.chat-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.follow-button {
+    background-color: #28a745;
+    color: white;
+}
+.App {
+    text-align: center;
+}
+
+.App-logo {
+    height: 40vmin;
+    pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .App-logo {
+        animation: App-logo-spin infinite 20s linear;
+    }
+}
+
+.App-header {
+    background-color: #282c34;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(10px + 2vmin);
+    color: white;
+}
+
+.App-link {
+    color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+nav {
+    background-color: #f8f9fa;
+    padding: 10px;
+}
+
+nav a {
+    margin-right: 10px;
+    text-decoration: none;
+    color: #007bff;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}

@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
-import Basic from './components/Basic';
-import MyPage from './components/MyPage';
+import { Basic, MyPage } from './Profile/profile'; // 使用命名导出的大括号导入
 import './styles/App.css';
 
 function App() {
@@ -21,8 +20,8 @@ function App() {
 
         {/* 路由配置 */}
         <Routes>
-          <Route path="/" element={<Basic />} />
-          <Route path="/mypage" element={<MyPage />} />
+          <Route path="/" element={<Basic />} /> {/* Basic 路由 */}
+          <Route path="/mypage" element={<MyPage />} /> {/* MyPage 路由 */}
         </Routes>
       </div>
     </Router>
