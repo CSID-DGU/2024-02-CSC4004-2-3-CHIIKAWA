@@ -1,44 +1,21 @@
 import './App.css';
-import logo from './resources/logo.png';
-import { useNavigate } from 'react-router-dom';
+import React from "react";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import ChatRoom from "./Chatroom/chatroom";
+import OpenChat from "./OpenChat/openchat";
+import NavBar from "./common/NavBar";
 
 function App() {
-  const navigate = useNavigate();
-
-  const navigateToChatRoom = () => {
-    navigate("/chatroom");
-  };
-
   return (
-    <body>
-
-      <div class="header">
-        <div class="logo">
-          <img src={logo} alt="logo" />
-        </div>
-        <div class="button-container">
-          <button className="btn-header btn-3" onClick={() => navigate('/login')}>
-            로그인
-          </button>
-          <button class="btn-header btn-3">회원가입</button>
-        </div>
+    <BrowserRouter>
+      <div className="App">
+        <NavBar />
+        <Routes>
+          <Route path="/openchat" element={<OpenChat />} />
+          <Route path="/chatroom" element={<ChatRoom />} />
+        </Routes>
       </div>
-
-      <main>
-        <h2>환영합니다!</h2>
-        <p>이곳은 버튼 스타일을 테스트하는 페이지입니다.</p>
-        <button class="button">기본 버튼</button>
-      </main>
-
-      <div class="footer">
-        <div class="button-container">
-          <button class="btn-footer">A</button>
-          <button class="btn-footer">B</button>
-          <button class="btn-footer">C</button>
-        </div>
-      </div>
-
-    </body>
+    </BrowserRouter>
   );
 }
 

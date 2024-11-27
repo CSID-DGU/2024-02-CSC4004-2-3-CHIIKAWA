@@ -1,0 +1,88 @@
+.wrapper {
+    width: 100vw;
+    height: 100vh;
+    background-color: #fff4e6;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .container {
+    width: 90%;
+    height: 90%;
+    background-color: #fff4e6;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+  
+  .search-bar {
+    width: 100%;
+    margin-bottom: 12px;
+  }
+  
+  .search-bar input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    box-sizing: border-box;
+    background-color: #f4e1d2;
+  }
+  
+  .chat-list {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow-y: auto;
+  }
+  
+  .chat-room {
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    background-color: #f4e1d2;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+  }
+  
+  .room-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .room-info div {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+  }
+  
+  .room-info h3 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  .room-info p {
+    margin: 4px 0;
+    color: #666;
+  }
+  
+  .room-info span {
+    font-size: 14px;
+    color: #999;
+  }
+  
+  .profile-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  
