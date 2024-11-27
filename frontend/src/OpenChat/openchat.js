@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import NavBar from "../common/NavBar";
 import "./openchat.css";
+import Footer from '../Common/footer';
 
 const OpenChat = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -42,7 +42,7 @@ const OpenChat = () => {
           </div>
         </div>
       </div>
-      <NavBar />
+      <Footer />
     </>
   );
 };

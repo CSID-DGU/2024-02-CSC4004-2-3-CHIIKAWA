@@ -7,6 +7,7 @@ import ChatIcon from "@mui/icons-material/Chat";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import GroupsIcon from "@mui/icons-material/Groups";
 import "./chatroom.css";
+import Footer from '../Common/footer';
 
 const ChatRoom = () => {
   const [message, setMessage] = useState(""); // 메세지 입력창
@@ -64,6 +65,7 @@ const ChatRoom = () => {
   const [roomName, setRoomName] = useState("채팅방 1");
 
   return (
+    <>
     <div className="chat-room-container">
       <header>
         <IconButton color="primary" className="icon-button" onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)} sx={{ color: "#4caf50" }} >
@@ -139,6 +141,8 @@ const ChatRoom = () => {
         </div>
       </div>
     </div>
+    <Footer />
+    </>
   );
 };
 
