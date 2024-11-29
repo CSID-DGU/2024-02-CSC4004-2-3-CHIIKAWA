@@ -7,22 +7,25 @@ function Footer() {
 
   return (
     <div className="footer">
-      <div className="button-container">
-        <button
-          className="btn-footer"
-          onClick={() => navigate('/swipe')}>
-          스와이프
-        </button>
-        <button
-          className="btn-footer"
-          onClick={() => navigate('/openchat')}>
-          오픈채팅
-        </button>
-        <button
-          className="btn-footer"
-          onClick={() => navigate('/chatroom')}>
-          채팅룸
-        </button>
+      <div className="icon-container">
+        <img
+          src="/swipe_icon.png"
+          alt="Swipe Icon"
+          className="footer-icon"
+          onClick={() => navigate('/swipe')}
+        />
+        <img
+          src="/search_icon.png"
+          alt="Search Icon"
+          className="footer-icon"
+          onClick={() => navigate('/openchat')}
+        />
+        <img
+          src="/chat_icon.png"
+          alt="Chat Icon"
+          className="footer-icon"
+          onClick={() => navigate('/chatroom')}
+        />
       </div>
     </div>
   );

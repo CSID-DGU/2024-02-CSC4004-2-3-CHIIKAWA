@@ -4,7 +4,7 @@ import confetti from 'canvas-confetti';
 import './swipe.css'; // CSS 파일
 import '../common.css';
 import Footer from '../Common/footer';
-
+import Header from '../Common/header';
 const db = [
     { name: 'Hamburger', url: process.env.PUBLIC_URL + '/hamburger.jpg' },
     { name: 'Pizza', url: process.env.PUBLIC_URL + '/pizza.jpg' },
@@ -35,7 +35,9 @@ function Swipe() {
     };
 
     return (
+        
         <div className="swipe-container">
+            <Header />
             {/* Title 문구 */}
             <h1 className="title">Swipe!</h1>
             <h2 className="subtitle">and find a friend</h2>

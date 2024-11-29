@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./openchat.css";
 import Footer from '../Common/footer';
+import Header from "../Common/header";
 
 const OpenChat = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,6 +18,7 @@ const OpenChat = () => {
   return (
     <>
       <div className="wrapper">
+        <Header />
         <div className="container">
           <div className="search-bar">
             <input

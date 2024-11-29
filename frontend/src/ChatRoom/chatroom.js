@@ -8,6 +8,7 @@ import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import GroupsIcon from "@mui/icons-material/Groups";
 import "./chatroom.css";
 import Footer from '../Common/footer';
+import Header from '../Common/header';
 
 const ChatRoom = () => {
   const [message, setMessage] = useState(""); // 메세지 입력창
@@ -66,16 +67,20 @@ const ChatRoom = () => {
 
   return (
     <>
-    <div className="chat-room-container">
-      <header>
-        <IconButton color="primary" className="icon-button" onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)} sx={{ color: "#4caf50" }} >
-          <ChatIcon />
-        </IconButton>
-        <div className="chat-room-title">{roomName}</div>
-        <IconButton color="primary" className="icon-button" onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)} sx={{ color: "#4caf50" }} >
-          <PeopleAltIcon />
-        </IconButton>
-      </header>
+      {/* 공통 헤더 */}
+      <Header />
+
+      <div className="chat-room-container">
+        {/* 기존의 ChatRoom 전용 헤더 */}
+        <header>
+          <IconButton color="primary" className="icon-button" onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)} sx={{ color: "#4caf50" }}>
+            <ChatIcon />
+          </IconButton>
+          <div className="chat-room-title">{roomName}</div>
+          <IconButton color="primary" className="icon-button" onClick={() => setIsRightSidebarOpen(!isRightSidebarOpen)} sx={{ color: "#4caf50" }}>
+            <PeopleAltIcon />
+          </IconButton>
+        </header>
 
       <div className={`left_sidebar ${isLeftSidebarOpen ? "open" : ""}`}>
         <div className="sidebar-header">
