@@ -8,6 +8,7 @@ import ChatRoom from './ChatRoom/chatroom';
 import Login from './Login/login'
 import Swipe from './Swipe/swipe'
 import OpenChat from './OpenChat/openchat'
+import Register from './Register/register'
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -20,6 +21,7 @@ root.render(
         <Route path="login" element={<Login />} />
         <Route path="swipe" element={<Swipe />} />
         <Route path="openchat" element={<OpenChat />} />
+        <Route path="register" element={<Register />} />
       </Routes>
     </BrowserRouter>
 );
