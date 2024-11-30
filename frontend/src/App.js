@@ -27,7 +27,8 @@ function App() {
       <main>
         <h2>환영합니다!</h2>
         <p>이곳은 버튼 스타일을 테스트하는 페이지입니다.</p>
-        <button class="button">기본 버튼</button>
+        <button class="button" onClick={() => getUser()}>get 버튼</button>
+        <button class="button" onClick={() => postUser()}>post 버튼</button>
       </main>
 
       <div class="footer">

@@ -9,8 +9,8 @@ import lombok.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class UserDto {
-    @Getter
     @Builder
+    @Getter
     public static class UserSaveDto{
         private String email;
         private String password;
