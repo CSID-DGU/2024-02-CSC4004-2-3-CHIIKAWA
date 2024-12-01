@@ -17,6 +17,8 @@
     "ajv-keywords": "^5.1.0",
     "axios": "^1.7.7",
     "canvas-confetti": "^1.9.3",
+    "install": "^0.13.0",
+    "npm": "^10.9.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.27.0",
