@@ -29,11 +29,11 @@ public class UserService {
     }
 
     public User saveUser(UserDto.UserSaveDto requestDto) {
-        FoodCategory food1 = foodRepository.findById(requestDto.getFavfood_id1()).orElseThrow();
-        FoodCategory food2 = foodRepository.findById(requestDto.getFavfood_id2()).orElseThrow();
-        FoodCategory food3 = foodRepository.findById(requestDto.getFavfood_id3()).orElseThrow();
+        //FoodCategory food1 = foodRepository.findById(requestDto.getFavfood_id1()).orElseThrow();
+        //FoodCategory food2 = foodRepository.findById(requestDto.getFavfood_id2()).orElseThrow();
+        //FoodCategory food3 = foodRepository.findById(requestDto.getFavfood_id3()).orElseThrow();
 
-        User user = requestDto.toEntity(food1, food2, food3);
+        User user = requestDto.toEntity();
         return userRepository.save(user);
     }
 

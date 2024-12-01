@@ -9,18 +9,19 @@ import lombok.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 public class UserDto {
-    @Getter
     @Builder
+    @Getter
+    @Setter
     public static class UserSaveDto{
         private String email;
         private String password;
         private String name;
         private Blob profileimg;
-        private int favfood_id1;
-        private int favfood_id2;
-        private int favfood_id3;
+        private FoodCategory food1;
+        private FoodCategory food2;
+        private FoodCategory food3;
 
-        public User toEntity(FoodCategory food1, FoodCategory food2, FoodCategory food3) {
+        public User toEntity() {
             return User.builder()
                     .email(email)
                     .password(password)

@@ -12,11 +12,11 @@ public class MessageDto {
     @Getter
     @Builder
     public static class MessageSaveDto{
-        private int userid;
-        private int roomid;
+        private User user;
+        private ChatRoom chatroom;
         private MessageType type;
 
-        public Message toEntity(User user, ChatRoom chatroom) {
+        public Message toEntity() {
             return Message.builder()
                     .user(user)
                     .chatroom(chatroom)

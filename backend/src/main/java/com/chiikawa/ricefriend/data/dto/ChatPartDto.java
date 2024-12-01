@@ -13,10 +13,10 @@ public class ChatPartDto {
     @Getter
     @Builder
     public static class ChatPartSaveDto{
-        private int userid;
-        private int roomid;
+        private User user;
+        private ChatRoom chatroom;
 
-        public ChatPart toEntity(User user, ChatRoom chatroom) {
+        public ChatPart toEntity() {
             return ChatPart.builder()
                     .user(user)
                     .chatroom(chatroom)

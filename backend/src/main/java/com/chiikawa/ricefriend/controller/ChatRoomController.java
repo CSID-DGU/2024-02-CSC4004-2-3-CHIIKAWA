@@ -17,7 +17,7 @@ public class ChatRoomController {
 
     private final ChatRoomService chatroomService;
 
-    // 유저 등록
+    // 채팅방 등록
     @PostMapping
     public ResponseEntity<ChatRoomDto.ChatRoomSaveDto> saveChatRoom(@RequestBody ChatRoomDto.ChatRoomSaveDto requestDto) {
         chatroomService.saveChatRoom(requestDto);
@@ -26,7 +26,7 @@ public class ChatRoomController {
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
-    // 유저 수정
+    // 채팅방 수정
     @PatchMapping("/{id}")
     public ResponseEntity<ChatRoomDto.ChatRoomUpdateDto> updateChatRoom(@PathVariable int id, @RequestBody ChatRoomDto.ChatRoomUpdateDto requestDto) {
         chatroomService.updateChatRoom(id, requestDto);
@@ -34,7 +34,7 @@ public class ChatRoomController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // 유저 조회
+    // 채팅방 조회
     @GetMapping("/{id}")
     public ResponseEntity<ChatRoomDto.ChatRoomResponseDto> getChatRoomById(@PathVariable int id) {
         ChatRoomDto.ChatRoomResponseDto responseDto = chatroomService.getChatRoomById(id);
@@ -42,7 +42,7 @@ public class ChatRoomController {
         return ResponseEntity.ok(responseDto);
     }
 
-    // 전체 유저 조회
+    // 전체 채팅방 조회
     @GetMapping
     public ResponseEntity<List<ChatRoomDto.ChatRoomResponseDto>> getRoomList() {
         List<ChatRoomDto.ChatRoomResponseDto> roomList = chatroomService.getAllChatRooms();
@@ -50,7 +50,7 @@ public class ChatRoomController {
         return ResponseEntity.ok(roomList);
     }
 
-    // 유저 삭제
+    // 채팅방 삭제
     @DeleteMapping("/delete/{id}")
     public void deleteChatRoomById(@PathVariable int id) {
         chatroomService.deleteChatRoom(id);
