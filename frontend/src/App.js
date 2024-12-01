@@ -6,6 +6,7 @@ import axios from 'axios';
 function App() {
   const navigate = useNavigate();
 
+  // GET API호출 예시
   async function getUser(params) {
     try {
       // GET 요청은 params에 실어 보냄
@@ -21,6 +22,7 @@ function App() {
     }
   }
 
+  // POST API호출 예시
   async function postUser(params) {
     try {
       // POST 요청은 body에 실어 보냄
