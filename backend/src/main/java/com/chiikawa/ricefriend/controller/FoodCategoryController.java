@@ -20,6 +20,7 @@ public class FoodCategoryController {
     @GetMapping("/{id}")
     public ResponseEntity<FoodCategoryDto.FoodCategoryResponseDto> getFoodById(@PathVariable int id) {
         FoodCategoryDto.FoodCategoryResponseDto responseDto = foodService.getFoodById(id);
+        System.out.println(responseDto);
 
         return ResponseEntity.ok(responseDto);
     }

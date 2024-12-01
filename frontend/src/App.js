@@ -1,9 +1,42 @@
 import './App.css';
 import logo from './resources/logo.png';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function App() {
   const navigate = useNavigate();
+
+  async function getUser(params) {
+    try {
+      // GET 요청은 params에 실어 보냄
+      const response = await axios.get('/users', {
+        params: {
+          id: 1
+        }
+      });
+      console.log(response);
+    } catch (e) {
+      // 실패 시 처리
+      console.error(e);
+    }
+  }
+
+  async function postUser(params) {
+    try {
+      // POST 요청은 body에 실어 보냄
+      let result = await axios.post('/users', {
+        name: 'Fred',
+        email: 'test@test.com',
+        password: '123',
+        food1: {
+          id: 1
+        }
+      });
+    } catch (e) {
+      // 실패 시 처리
+      console.error(e);
+    }
+  }
 
   const navigateToChatRoom = () => {
     navigate("/chatroom");
