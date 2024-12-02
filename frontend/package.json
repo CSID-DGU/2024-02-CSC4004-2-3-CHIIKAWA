@@ -26,7 +26,7 @@
     "web-vitals": "^2.1.4",
     "webpack": "^5.96.1"
   },
-  "proxy": "http://localhost:8080",
+"proxy": "http://svc.sel4.cloudtype.app:32006",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
