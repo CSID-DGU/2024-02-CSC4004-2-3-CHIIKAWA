@@ -62,7 +62,6 @@ html {
 /* card-container */
 .card-container {
     display: flex;
-    position: ;
     justify-content: center;
     position: relative;
     width: 100%;
