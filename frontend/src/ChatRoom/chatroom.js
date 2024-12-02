@@ -11,6 +11,8 @@ import ChatIcon from "@mui/icons-material/Chat";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import GroupsIcon from "@mui/icons-material/Groups";
 
+import ChatGroup from './ChatGroup/chatgroup';
+import ChatMember from './ChatMember/chatmember';
 import ChatMessage from './ChatMessage/chatmessage';
 import Footer from '../Common/footer';
 import Header from '../Common/header';
@@ -85,6 +87,9 @@ const ChatRoom = () => {
     // Subscribe to the Public Topic
     stompClient.current.subscribe(`/sub/chatroom/${curRoom.id}`, (msg) => {
       const newMessage = JSON.parse(msg.body);
+      if (newMessage.type == MessageType.LEAVE) {
+        newMessage.detail = `${newMessage.user.name}님이 퇴장하셨습니다.`;
+      }
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
@@ -143,9 +148,9 @@ const ChatRoom = () => {
 
   // 임시 그룹 데이터
   const groupList = [
-    { id: 1, groupName: "group1", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
-    { id: 2, groupName: "group2", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
-    { id: 3, groupName: "group3", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
+    { id: 1, name: "group1", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
+    { id: 2, name: "group2", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
+    { id: 3, name: "group3", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
   ];
 
   // 임시 멤버 데이터
@@ -181,10 +186,7 @@ const ChatRoom = () => {
           </div>
           <div className="group-list">
             {groupList.map((group) => (
-              <div className="group-item" key={group.id}>
-                <div className="group-icon">{group.icon}</div>
-                <div className="group-name">{group.groupName}</div>
-              </div>
+              <ChatGroup group={group} />
             ))}
           </div>
         </div>
@@ -195,10 +197,7 @@ const ChatRoom = () => {
           </div>
           <div className="member-list">
             {memberList.map((member) => (
-              <div className="member-item" key={member.id}>
-                <div className="avatar">{member.avatar}</div>
-                <div className="member-name">{member.name}</div>
-              </div>
+              <ChatMember member={member} />
             ))}
           </div>
         </div>

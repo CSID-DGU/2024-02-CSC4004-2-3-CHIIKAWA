@@ -3,20 +3,19 @@ package com.chiikawa.ricefriend.controller;
 import java.util.List;
 
 import com.chiikawa.ricefriend.data.dto.MessageDto;
-import com.chiikawa.ricefriend.data.entity.Message;
-import com.chiikawa.ricefriend.model.ChatMessage;
+import com.chiikawa.ricefriend.data.entity.ChatRoom;
+import com.chiikawa.ricefriend.data.entity.User;
 import com.chiikawa.ricefriend.service.MessageService;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -32,20 +31,27 @@ public class MessageController {
 
     @MessageMapping("/addUser")
     public ResponseEntity<String> addUser(@Payload MessageDto.MessageResponseDto messageDto, SimpMessageHeaderAccessor headerAccessor){
-        System.out.println("=================JOIN=================");
-        headerAccessor.getSessionAttributes().put("user", messageDto.getUser());
+        System.out.println("=================== JOIN ===================");
+
+        User user = messageDto.getUser();
+        ChatRoom chatroom = messageDto.getChatroom();
+
+        headerAccessor.getSessionAttributes().put("user", user);
+        headerAccessor.getSessionAttributes().put("chatroom", chatroom);
+
         // 메시지를 해당 채팅방 구독자들에게 전송
-        messagingTemplate.convertAndSend("/sub/chatroom/" + messageDto.getChatroom().getId(), messageDto);
+        messagingTemplate.convertAndSend("/sub/chatroom/" + chatroom.getId(), messageDto);
         return ResponseEntity.ok("메시지 전송 완료");
     }
 
     // 채팅 메시지 수신 및 저장
     @MessageMapping("/message")
     public ResponseEntity<String> receiveMessage(@RequestBody MessageDto.MessageSaveDto messageDto) {
+        System.out.println("=================== SENT ===================");
+
         // 메시지 저장
         //Message chatMessage = messageService.saveMessage(messageDto);
-        System.out.println("=================SENT=================");
-        System.out.println(messageDto.getDetail());
+
         // 메시지를 해당 채팅방 구독자들에게 전송
         messagingTemplate.convertAndSend("/sub/chatroom/" + messageDto.getChatroom().getId(), messageDto);
         return ResponseEntity.ok("메시지 전송 완료");

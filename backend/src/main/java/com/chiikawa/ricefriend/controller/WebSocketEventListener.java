@@ -32,6 +32,7 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+        System.out.println(headerAccessor.getSessionAttributes());
         User user = (User) headerAccessor.getSessionAttributes().get("user");
         ChatRoom chatroom = (ChatRoom) headerAccessor.getSessionAttributes().get("chatroom");
 

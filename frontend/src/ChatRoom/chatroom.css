@@ -127,24 +127,6 @@ header {
   padding: 10px;
 }
 
-.group-item, .member-item {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-  padding: 8px;
-  border-bottom: 1px solid #ddd;
-}
-
-.group-name, .member-name {
-  font-size: 14px;
-  color: #333;
-}
-
-.group-icon, .avatar {
-  font-size: 30px;
-  color: #666;
-}
-
 .left-sidebar-open {
   margin-left: 220px;
 }
