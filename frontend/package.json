@@ -25,6 +25,7 @@
     "react-scripts": "^5.0.1",
     "react-tinder-card": "^1.6.4",
     "schema-utils": "^3.3.0",
+    "sockjs-client": "^1.6.1",
     "web-vitals": "^2.1.4",
     "webpack": "^5.96.1"
   },

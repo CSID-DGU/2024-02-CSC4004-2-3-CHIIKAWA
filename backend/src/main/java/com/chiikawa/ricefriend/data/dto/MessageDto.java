@@ -1,12 +1,12 @@
 package com.chiikawa.ricefriend.data.dto;
 
+import java.sql.Timestamp;
+
 import com.chiikawa.ricefriend.data.entity.*;
 import com.chiikawa.ricefriend.model.MessageType;
 
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
-
-import java.sql.Blob;
 
 public class MessageDto {
     @Getter
@@ -15,12 +15,16 @@ public class MessageDto {
         private User user;
         private ChatRoom chatroom;
         private MessageType type;
+        private String detail;
+        private Timestamp senttime;
 
         public Message toEntity() {
             return Message.builder()
                     .user(user)
                     .chatroom(chatroom)
                     .type(type)
+                    .detail(detail)
+                    .senttime(senttime)
                     .build();
         }
     }
@@ -39,12 +43,18 @@ public class MessageDto {
         private ChatRoom chatroom;
         @JsonInclude(JsonInclude.Include.NON_DEFAULT)
         private MessageType type;
+        @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+        private String detail;
+        @JsonInclude(JsonInclude.Include.NON_DEFAULT)
+        private Timestamp senttime;
 
         public MessageResponseDto(Message message) {
             this.id = message.getId();
             this.user = message.getUser();
             this.chatroom = message.getChatroom();
             this.type = message.getType();
+            this.detail = message.getDetail();
+            this.senttime = message.getSenttime();
         }
     }
 }

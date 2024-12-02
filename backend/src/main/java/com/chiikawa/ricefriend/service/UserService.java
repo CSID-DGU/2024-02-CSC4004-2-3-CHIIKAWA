@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import com.chiikawa.ricefriend.data.dto.UserDto;
 import com.chiikawa.ricefriend.data.entity.User;
-import com.chiikawa.ricefriend.data.entity.FoodCategory;
 import com.chiikawa.ricefriend.data.repository.UserRepository;
 import com.chiikawa.ricefriend.data.repository.FoodCategoryRepository;
 
@@ -43,6 +42,7 @@ public class UserService {
 
         user.update(requestDto.getPassword()
                 , requestDto.getName()
+                , requestDto.getState()
                 , requestDto.getProfileimg()
                 , requestDto.getFood1()
                 , requestDto.getFood2()

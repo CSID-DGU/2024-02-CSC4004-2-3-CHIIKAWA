@@ -1,4 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
+
+import axios from 'axios';
+import SockJS from 'sockjs-client';
+import { Stomp, CompatClient } from '@stomp/stompjs';
+
 import IconButton from "@mui/material/IconButton";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import Send from "@mui/icons-material/Send";
@@ -7,49 +12,101 @@ import ChatIcon from "@mui/icons-material/Chat";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import GroupsIcon from "@mui/icons-material/Groups";
 import "./chatroom.css";
+
+import ChatMessage from './ChatMessage/chatmessage';
 import Footer from '../Common/footer';
 import Header from '../Common/header';
 
+const MessageType = {
+  CHAT: "CHAT",
+  JOIN: "JOIN",
+  LEAVE: "LEAVE"
+};
+
 const ChatRoom = () => {
+
   const [message, setMessage] = useState(""); // 메세지 입력창
   const [messages, setMessages] = useState([  // 화면에 표시되는 메세지들
-    { id: 1, username: "name1", message: "Hi!" },
-    { id: 2, username: "name2", message: "Hello." },
+    { user: { id: 2 }, chatroom: {id: 1}, username: "name1", detail: "Hi!", senttime: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) },
+    { user: { id: 3 }, chatroom: {id: 1}, username: "name2", detail: "Hello.", senttime: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) },
   ]);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
 
   const chatBoxRef = useRef(null);
 
-  const sendMessage = () => {
+  // 유저id, 룸id 불러오기
+  // const userId = localStorage.getItem(userid);
+  // const roomId = sessionStorage.getItem('roomId') || undefined;
+  const userId = 1;
+  const roomId = 1;
+
+  // 채팅 내역 조회하고 불러오기
+  const checkMessageHistory = async () => {
+    try {
+      const details = await axios.get("/messages", { 
+        params: {
+          userid: userId,
+          roomid: roomId
+        }
+      })
+      console.log(details);
+      details.data.forEach(detail => {
+        console.log(detail);
+        detail.senttime = new Date(detail.senttime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+        setMessages([...messages, detail]);
+      });
+    } catch (error) {
+      console.error('채팅 내역 불러오기 에러:', error);
+    }
+  };
+
+  useEffect(() => {
+    checkMessageHistory();
+  }, [userId, roomId]);
+
+  const sendMessage = async () => {
     if (message.trim()) {
       const newMessage = {
-        id: messages.length + 1,
-        username: "Me",
-        message,
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        user: {
+          id: 1,
+          name: "Me"
+        },
+        chatroom: {
+          id: 1
+        },
+        type: MessageType.CHAT,
+        detail: message,
+        senttime: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
       };
+      try {
+        // 전송 메세지 DB저장 api호출
+        //await axios.post("/messages", newMessage);
+      } catch (e) {
+        // 실패 시 처리
+        console.error(e);
+      }
       setMessages([...messages, newMessage]);
       setMessage("");
     }
   };
 
   // 전송버튼이 아닌 엔터를 눌러도 전송
-  const handleKeyPress = (e) => { 
+  const handleKeyPress = (e) => {
     if (e.key === "Enter") {
       sendMessage();
     }
   };
 
   // 추가 메세지가 있으면 자동으로 스크롤을 제일 하단으로 내림
-  useEffect(() => { 
+  useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }, [messages]);
 
   // 임시 그룹 데이터
-  const groupList = [ 
+  const groupList = [
     { id: 1, groupName: "group1", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
     { id: 2, groupName: "group2", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
     { id: 3, groupName: "group3", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
@@ -82,71 +139,72 @@ const ChatRoom = () => {
           </IconButton>
         </header>
 
-      <div className={`left_sidebar ${isLeftSidebarOpen ? "open" : ""}`}>
-        <div className="sidebar-header">
-          <div className="sidebar-title">채팅방 목록</div>
-        </div>
-        <div className="group-list">
-          {groupList.map((group) => (
-            <div className="group-item" key={group.id}>
-              <div className="group-icon">{group.icon}</div>
-              <div className="group-name">{group.groupName}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className={`right_sidebar ${isRightSidebarOpen ? "open" : ""}`}>
-        <div className="sidebar-header">
-          <div className="sidebar-title">참가 인원</div>
-        </div>
-        <div className="member-list">
-          {memberList.map((member) => (
-            <div className="member-item" key={member.id}>
-              <div className="avatar">{member.avatar}</div>
-              <div className="member-name">{member.name}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className={`chat-box-container ${isRightSidebarOpen ? "right-sidebar-open" : ""} ${isLeftSidebarOpen ? "left-sidebar-open" : ""}`}>
-        <div className="chat-box" ref={chatBoxRef}>
-          {messages.map((msg) => (
-            <div className="chat-message-container" key={msg.id}>
-              <div className="avatar-message">
-                <AccountCircleOutlinedIcon sx={{ fontSize: 40, color: "#4caf50" }} />
+        <div className={`left_sidebar ${isLeftSidebarOpen ? "open" : ""}`}>
+          <div className="sidebar-header">
+            <div className="sidebar-title">채팅방 목록</div>
+          </div>
+          <div className="group-list">
+            {groupList.map((group) => (
+              <div className="group-item" key={group.id}>
+                <div className="group-icon">{group.icon}</div>
+                <div className="group-name">{group.groupName}</div>
               </div>
-              <div className="message-content">
-                <div className="username">{msg.username}</div>
-                <div className="chat-message">
-                  {msg.message}
-                  <div className="message-time">{msg.time}</div>
-                </div>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
 
-        <div className="message-input-container">
-          <IconButton color="primary" component="label" className="icon-button">
-            <PhotoCamera sx={{color: "#4caf50" }} />
-          </IconButton>
-          <input
-            type="text"
-            className="input"
-            placeholder="메시지를 입력하세요."
-            value={message}
-            onChange={(e) => setMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-          />
-          <IconButton color="primary" onClick={sendMessage} className="icon-button">
-            <Send sx={{color: "#4caf50" }} />
-          </IconButton>
+        <div className={`right_sidebar ${isRightSidebarOpen ? "open" : ""}`}>
+          <div className="sidebar-header">
+            <div className="sidebar-title">참가 인원</div>
+          </div>
+          <div className="member-list">
+            {memberList.map((member) => (
+              <div className="member-item" key={member.id}>
+                <div className="avatar">{member.avatar}</div>
+                <div className="member-name">{member.name}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className={`chat-box-container ${isRightSidebarOpen ? "right-sidebar-open" : ""} ${isLeftSidebarOpen ? "left-sidebar-open" : ""}`}>
+          <div className="chat-box" ref={chatBoxRef}>
+            {messages.map((msg) => (
+              <ChatMessage msg={msg} isSender={userId == msg.user.id}/>
+              // <div className="chat-message-container" key={msg.user.id}>
+              //   <div className="avatar-message">
+              //     <AccountCircleOutlinedIcon sx={{ fontSize: 40, color: "#4caf50" }} />
+              //   </div>
+              //   <div className="message-content">
+              //     <div className="username">{msg.user.name}</div>
+              //     <div className="chat-message">
+              //       {msg.detail}
+              //       <div className="message-time">{msg.senttime}</div>
+              //     </div>
+              //   </div>
+              // </div>
+            ))}
+          </div>
+
+          <div className="message-input-container">
+            <IconButton color="primary" component="label" className="icon-button">
+              <PhotoCamera sx={{ color: "#4caf50" }} />
+            </IconButton>
+            <input
+              type="text"
+              className="input"
+              placeholder="메시지를 입력하세요."
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+            />
+            <IconButton color="primary" onClick={sendMessage} className="icon-button">
+              <Send sx={{ color: "#4caf50" }} />
+            </IconButton>
+          </div>
         </div>
       </div>
-    </div>
-    <Footer />
+      <Footer />
     </>
   );
 };

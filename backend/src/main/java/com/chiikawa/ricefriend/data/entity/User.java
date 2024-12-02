@@ -36,21 +36,23 @@ public class User implements Serializable {
     private FoodCategory food3;
 
     @Builder
-    protected User(String email, String password, String name, Blob profileimg
+    protected User(String email, String password, String name, String state, Blob profileimg
             , FoodCategory food1, FoodCategory food2, FoodCategory food3) {
         this.email = email;
         this.password = password;
         this.name = name;
+        this.state = state;
         this.profileimg = profileimg;
         this.food1 = food1;
         this.food2 = food2;
         this.food3 = food3;
     }
 
-    public void update(String password, String name, Blob profileimg
+    public void update(String password, String name, String state, Blob profileimg
             , FoodCategory food1, FoodCategory food2, FoodCategory food3) {
         this.password = password;
         this.name = name;
+        this.state = state;
         this.profileimg = profileimg;
         this.food1 = food1;
         this.food2 = food2;

@@ -41,8 +41,6 @@ CREATE TABLE `chatroom` (
 CREATE TABLE `chatpart` (
   `userid` int NOT NULL,
   `roomid` int NOT NULL,
-  `user` varbinary(255) NOT NULL,
-  `chatroom` varbinary(255) NOT NULL,
   PRIMARY KEY (`userid`,`roomid`),
   FOREIGN KEY (`userid`) REFERENCES `user` (`id`),
   FOREIGN KEY (`roomid`) REFERENCES `chatroom` (`id`)
@@ -68,3 +66,6 @@ VALUES (1, "떡볶이");
 
 INSERT INTO user (email, password, name, favfood_id1)
 VALUES ("admin@boss.com", "123", "정준혁", 1);
+
+INSERT INTO chatroom(name, state, limitednum) VALUES("떡볶이 먹을 사람~~", "ACT", 4);
+INSERT INTO chatpart(userid, roomid) VALUES(1, 1);
