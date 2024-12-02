@@ -61,25 +61,21 @@ function Register() {
         }
 
         const requestBody = {
+            name,
             email,
             password,
-            name,
             state: '활동 중',
-            profileimg: profileImage ? profileImage.name : null,
-            food1: foodPreferences[0] ? foodPreferences[0].id : null,
-            food2: foodPreferences[1] ? foodPreferences[1].id : null,
-            food3: foodPreferences[2] ? foodPreferences[2].id : null,
+            food1: foodPreferences[0] ? { id: foodPreferences[0].id } : null,
+            food2: foodPreferences[1] ? { id: foodPreferences[1].id } : null,
+            food3: foodPreferences[2] ? { id: foodPreferences[2].id } : null,
         };
+
 
 
         console.log('요청 Body:', requestBody);
 
         try {
-            const response = await axios.post('/users', requestBody, {
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
+            const response = await axios.post('/users', requestBody);
             console.log('회원가입 성공:', response.data);
             navigate('/swipe');
         } catch (error) {
