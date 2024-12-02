@@ -1,3 +1,10 @@
+/* 기본 스타일 설정 */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #FFF4E6;
+}
+
 /* 회원가입 컨테이너 */
 .register-container {
     display: flex;
@@ -14,12 +21,14 @@
     font-weight: bold;
     color: #333333;
     margin-bottom: 8px;
+    text-align: center;
 }
 
 .register-subtitle {
     font-size: 14px;
     color: #666666;
     margin-bottom: 30px;
+    text-align: center;
 }
 
 /* 회원가입 폼 */
@@ -38,7 +47,20 @@
     width: 100%;
 }
 
-/* 아이콘 */
+/* 입력 필드 */
+.register-input {
+    width: 100%;
+    /* 버튼과 입력 필드 너비를 동일하게 설정 */
+    padding: 12px 12px 12px 36px;
+    border-radius: 10px;
+    border: 1px solid #DDDDDD;
+    background-color: #F4E1D2;
+    font-size: 14px;
+    color: #333333;
+    box-sizing: border-box;
+}
+
+/* 입력 필드 아이콘 */
 .register-icon {
     position: absolute;
     left: 10px;
@@ -48,20 +70,10 @@
     color: #888888;
 }
 
-/* 입력 필드 */
-.register-input {
-    width: 83%;
-    padding: 12px 12px 12px 36px;
-    border-radius: 10px;
-    border: 1px solid #DDDDDD;
-    background-color: #F4E1D2;
-    font-size: 14px;
-    color: #333333;
-}
-
 /* 회원가입 버튼 */
 .register-button {
     width: 100%;
+    /* 버튼 너비를 입력 필드와 동일하게 설정 */
     padding: 12px;
     border-radius: 10px;
     background-color: #FF8C42;
@@ -69,4 +81,80 @@
     border: none;
     cursor: pointer;
     font-size: 16px;
+    margin-bottom: 20px;
+    transition: background-color 0.3s ease;
+}
+
+/* 회원가입 버튼 호버 효과 */
+.register-button:hover {
+    background-color: #E67E3A;
+}
+
+/* 팝업 오버레이 */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+/* 팝업 내용 */
+.popup-content {
+    background: #FFFFFF;
+    padding: 20px;
+    border-radius: 10px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* 카테고리 제목 */
+.category-title {
+    font-size: 16px;
+    font-weight: bold;
+    color: #FF8C42;
+    margin: 10px 0;
+}
+
+/* 음식 선택 버튼 */
+.option-button {
+    display: inline-block;
+    margin: 5px;
+    padding: 10px 15px;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+    /* 기본 상태: 하얀색 */
+    color: #333333;
+    border: 1px solid #DDDDDD;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.option-button.selected {
+    background-color: #FF8C42;
+    /* 선택된 상태: 오렌지색 */
+    color: #FFFFFF;
+    border: none;
+}
+
+/* 확인 버튼 */
+.confirm-button {
+    margin-top: 20px;
+    padding: 12px;
+    background-color: #FF8C42;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.confirm-button:hover {
+    background-color: #E67E3A;
 }
