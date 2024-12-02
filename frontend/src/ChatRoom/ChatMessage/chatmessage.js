@@ -14,7 +14,7 @@ const ChatMessage = ({ msg, isSender }) => {
                 {!isSender && <div className="username">{msg.user.name}</div>}
                 <div className="chat-message">
                     {msg.detail}
-                    <div className="message-time">{msg.senttime}</div>
+                    <div className="message-time">{new Date(msg.senttime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>
                 </div>
             </div>
         </div>

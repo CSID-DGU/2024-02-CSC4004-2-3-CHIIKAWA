@@ -30,6 +30,14 @@ public class MessageService {
                 .collect(Collectors.toList());
     }
 
+    public List<MessageDto.MessageResponseDto> getMessagesByRoomId(int roomid) {
+        List<Message> messages = messageRepository.findByRoomId(roomid);
+
+        return messages.stream()
+                .map(MessageDto.MessageResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
     public List<MessageDto.MessageResponseDto> getMessagesByCompositeId(int userid, int roomid) {
         List<Message> messages = messageRepository.findByCompositeId(userid, roomid);
 

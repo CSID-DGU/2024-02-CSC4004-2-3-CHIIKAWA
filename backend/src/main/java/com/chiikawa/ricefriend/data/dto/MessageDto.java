@@ -32,7 +32,9 @@ public class MessageDto {
     // ===================요청, 응답 구분선 ================
 
     @Getter
+    @Setter
     @Builder
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class MessageResponseDto {
         @JsonInclude(JsonInclude.Include.NON_DEFAULT)

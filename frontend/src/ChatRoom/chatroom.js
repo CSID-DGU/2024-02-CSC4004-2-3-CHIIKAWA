@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 
 import axios from 'axios';
-import SockJS from 'sockjs-client';
 import { Stomp, CompatClient } from '@stomp/stompjs';
 
 import IconButton from "@mui/material/IconButton";
@@ -11,11 +10,12 @@ import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined
 import ChatIcon from "@mui/icons-material/Chat";
 import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
 import GroupsIcon from "@mui/icons-material/Groups";
-import "./chatroom.css";
 
 import ChatMessage from './ChatMessage/chatmessage';
 import Footer from '../Common/footer';
 import Header from '../Common/header';
+
+import "./chatroom.css";
 
 const MessageType = {
   CHAT: "CHAT",
@@ -24,70 +24,106 @@ const MessageType = {
 };
 
 const ChatRoom = () => {
-
   const [message, setMessage] = useState(""); // 메세지 입력창
   const [messages, setMessages] = useState([  // 화면에 표시되는 메세지들
-    { user: { id: 2 }, chatroom: {id: 1}, username: "name1", detail: "Hi!", senttime: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) },
-    { user: { id: 3 }, chatroom: {id: 1}, username: "name2", detail: "Hello.", senttime: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) },
+    { user: { id: 2, name: "name1" }, chatroom: { id: 1 }, type: MessageType.CHAT, detail: "Hi!", senttime: Date.now() },
+    { user: { id: 3, name: "name2" }, chatroom: { id: 1 }, type: MessageType.CHAT, detail: "Hello.", senttime: Date.now() },
   ]);
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
 
   const chatBoxRef = useRef(null);
+  const stompClient = useRef(null);
 
   // 유저id, 룸id 불러오기
-  // const userId = localStorage.getItem(userid);
-  // const roomId = sessionStorage.getItem('roomId') || undefined;
-  const userId = 1;
-  const roomId = 1;
+  // const curUser = localStorage.getItem("user");
+  // const roomId = sessionStorage.getItem("roomId") || undefined;
+  const curUser = { id: 1, name: "정준혁", };
+  const curRoom = { id: 1, name: "채팅방 1" };
+
+  const init = async () => {
+    await checkMessageHistory();
+    await connect();
+  }
+
+  useEffect(() => {
+    init();
+    // 컴포넌트 언마운트 시 웹소켓 연결 해제
+    return () => disconnect();
+  }, []);
 
   // 채팅 내역 조회하고 불러오기
   const checkMessageHistory = async () => {
     try {
-      const details = await axios.get("/messages", { 
-        params: {
-          userid: userId,
-          roomid: roomId
-        }
-      })
-      console.log(details);
-      details.data.forEach(detail => {
-        console.log(detail);
-        detail.senttime = new Date(detail.senttime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
-        setMessages([...messages, detail]);
-      });
+      await axios.get("/messages/" + curRoom.id)
+        .then(response => {
+          response.data.forEach(msg => {
+            setMessages((prevMessages) => [...prevMessages, msg])
+          });
+          // 나중에 이걸로 변경
+          //setMessages(response.data);
+        });
     } catch (error) {
       console.error('채팅 내역 불러오기 에러:', error);
     }
   };
 
-  useEffect(() => {
-    checkMessageHistory();
-  }, [userId, roomId]);
+  // 웹소켓 연결 설정
+  const connect = () => {
+    const socket = new WebSocket("ws://localhost:8080/ws");
+    stompClient.current = Stomp.over(socket);
+    stompClient.current.connect({}, onConnected, onError);
+  }
+  // 웹소켓 연결 해제
+  const disconnect = () => {
+    if (stompClient.current) {
+      stompClient.current.disconnect();
+    }
+  };
+
+  const onConnected = () => {
+    // Subscribe to the Public Topic
+    stompClient.current.subscribe(`/sub/chatroom/${curRoom.id}`, (msg) => {
+      const newMessage = JSON.parse(msg.body);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
+
+    const joinMessage = {
+      user: curUser,
+      chatroom: curRoom,
+      type: MessageType.JOIN,
+      detail: curUser.name + "님이 입장하셨습니다."
+    };
+
+    // Tell your username to the server
+    stompClient.current.send(`/pub/addUser`, {}, JSON.stringify(joinMessage));
+
+    //setMessages((prevMessages) => [...prevMessages, joinMessage]);
+  }
+
+  function onError(error) {
+    alert(error);
+  }
 
   const sendMessage = async () => {
-    if (message.trim()) {
+    if (message.trim() && stompClient.current) {
       const newMessage = {
-        user: {
-          id: 1,
-          name: "Me"
-        },
-        chatroom: {
-          id: 1
-        },
+        user: curUser,
+        chatroom: curRoom,
         type: MessageType.CHAT,
         detail: message,
-        senttime: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+        senttime: Date.now()
       };
       try {
         // 전송 메세지 DB저장 api호출
         //await axios.post("/messages", newMessage);
+        console.log(newMessage);
+        stompClient.current.send(`/pub/message`, {}, JSON.stringify(newMessage));
+        setMessage("");
       } catch (e) {
         // 실패 시 처리
         console.error(e);
       }
-      setMessages([...messages, newMessage]);
-      setMessage("");
     }
   };
 
@@ -120,7 +156,7 @@ const ChatRoom = () => {
   ];
 
   // 상단 채팅방 이름
-  const [roomName, setRoomName] = useState("채팅방 1");
+  const [roomName, setRoomName] = useState(curRoom.name);
 
   return (
     <>
@@ -170,19 +206,7 @@ const ChatRoom = () => {
         <div className={`chat-box-container ${isRightSidebarOpen ? "right-sidebar-open" : ""} ${isLeftSidebarOpen ? "left-sidebar-open" : ""}`}>
           <div className="chat-box" ref={chatBoxRef}>
             {messages.map((msg) => (
-              <ChatMessage msg={msg} isSender={userId == msg.user.id}/>
-              // <div className="chat-message-container" key={msg.user.id}>
-              //   <div className="avatar-message">
-              //     <AccountCircleOutlinedIcon sx={{ fontSize: 40, color: "#4caf50" }} />
-              //   </div>
-              //   <div className="message-content">
-              //     <div className="username">{msg.user.name}</div>
-              //     <div className="chat-message">
-              //       {msg.detail}
-              //       <div className="message-time">{msg.senttime}</div>
-              //     </div>
-              //   </div>
-              // </div>
+              <ChatMessage msg={msg} isSender={curUser.id === msg.user.id} />
             ))}
           </div>
 

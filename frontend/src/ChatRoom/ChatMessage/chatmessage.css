@@ -38,6 +38,7 @@
     max-width: 50%;
     padding: 10px;
     margin-top: 5px;
+    text-align: left;
 
     /* 텍스트 개행 관련 속성 */
     word-wrap: break-word; /* 단어가 길 때 강제 줄바꿈 */
@@ -47,11 +48,9 @@
 
 .sender .chat-message {
     background-color: #f4be53;
-    text-align: right;
 }
 .receiver .chat-message {
     background-color: #f4e1d2;
-    text-align: left;
 }
 
 .message-time {

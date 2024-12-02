@@ -1,5 +1,9 @@
 package com.chiikawa.ricefriend.controller;
 
+import com.chiikawa.ricefriend.data.dto.MessageDto;
+import com.chiikawa.ricefriend.data.dto.UserDto;
+import com.chiikawa.ricefriend.data.entity.ChatRoom;
+import com.chiikawa.ricefriend.data.entity.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,16 +32,20 @@ public class WebSocketEventListener {
     @EventListener
     public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
         StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+        User user = (User) headerAccessor.getSessionAttributes().get("user");
+        ChatRoom chatroom = (ChatRoom) headerAccessor.getSessionAttributes().get("chatroom");
 
-        String username = (String) headerAccessor.getSessionAttributes().get("username");
-        if(username != null) {
-            logger.info("User Disconnected : " + username);
+        System.out.println("=================LEAVE==================");
 
-            ChatMessage chatMessage = new ChatMessage();
+        if(user != null) {
+            logger.info("User Disconnected : " + user.getName());
+
+            MessageDto.MessageResponseDto chatMessage = new MessageDto.MessageResponseDto();
+            chatMessage.setUser(user);
+            chatMessage.setChatroom(chatroom);
             chatMessage.setType(MessageType.LEAVE);
-            chatMessage.setSender(username);
 
-            messagingTemplate.convertAndSend("/topic/public", chatMessage);
+            messagingTemplate.convertAndSend("/sub/chatroom/" + chatMessage.getChatroom().getId(), chatMessage);
         }
     }
 }
