@@ -44,16 +44,7 @@ const ChatRoom = () => {
   const [roomName, setRoomName] = useState("");
 
   // 멤버 데이터
-  // const [memberList, setMemberList] = [
-  //   { id: 1, name: "name1", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
-  //   { id: 2, name: "name2", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
-  //   { id: 3, name: "name3", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
-  // ];
-  const memberList = [
-    { id: 1, name: "name1", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
-    { id: 2, name: "name2", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
-    { id: 3, name: "name3", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
-  ];
+  const [memberList, setMemberList] = useState([]);
 
   useEffect(() => {
     getChatroomsByUserId();
@@ -67,6 +58,7 @@ const ChatRoom = () => {
 
   const refresh = async () => {
     if (curRoom != undefined) {
+      await getMembersByRoomId();
       setRoomName(curRoom.name);
       await getMessageHistory();
       connect();
@@ -74,12 +66,20 @@ const ChatRoom = () => {
   }
 
   const getChatroomsByUserId = async () => {
-    const rooms = await axios.get(`/chatrooms/login/${curUser.id}`);
+    const rooms = await axios.get(`/chatrooms/chatroom/${curUser.id}`);
     setChatRoom(rooms.data[0] || undefined);
     rooms.data.forEach(room => {
       room["icon"] = <GroupsIcon sx={{ fontSize: 30, color: "#666" }} />;
     });
     setChatRoomList(rooms.data);
+  };
+
+  const getMembersByRoomId = async () => {
+    const members = await axios.get(`/users/chatroom/${curRoom.id}`);
+    members.data.forEach(member => {
+      member["avatar"] = <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} />;
+    });
+    setMemberList(members.data);
   };
 
   // 채팅 내역 조회하고 불러오기
@@ -198,12 +198,12 @@ const ChatRoom = () => {
           <div className="group-list">
             {roomList.map((room) => (
               <ChatGroup
+                user={curUser}
                 group={room}
+                isCurRoom={room.id === curRoom.id}
                 onClick={(e) => {
                   if (curRoom.id != room.id) {
-                    alert(1);
                     setChatRoom(room);
-                    refresh();
                   }
                 }} />
             ))}
