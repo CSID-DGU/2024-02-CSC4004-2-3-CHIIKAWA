@@ -105,16 +105,18 @@ body {
 }
 
 /* 팝업 내용 */
-.popup-content {
-    background: #FFFFFF;
-    padding: 20px;
-    border-radius: 10px;
-    width: 90%;
-    max-width: 400px;
-    text-align: center;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}
 
+.popup-content {
+    max-height: 70vh;
+    /* 팝업의 최대 높이를 화면의 70%로 제한 */
+    overflow-y: auto;
+    /* 내용이 넘칠 경우 스크롤 추가 */
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    text-align: center;
+    background-color: #fff;
+}
 /* 카테고리 제목 */
 .category-title {
     font-size: 16px;

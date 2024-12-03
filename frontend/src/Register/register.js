@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './register.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -11,37 +11,60 @@ function Register() {
     const [foodPreferences, setFoodPreferences] = useState([]);
     const [profileImage, setProfileImage] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
+    const [foodData, setFoodData] = useState({}); // 음식 데이터를 저장할 상태
     const navigate = useNavigate();
-    const dummyFoodData = {
-        분식: [
-            { id: 1, name: '떡볶이' },
-            { id: 2, name: '순대' },
-            { id: 3, name: '튀김' },
-        ],
-        양식: [
-            { id: 4, name: '피자' },
-            { id: 5, name: '파스타' },
-            { id: 6, name: '스테이크' },
-        ],
-        한식: [
-            { id: 7, name: '불고기' },
-            { id: 8, name: '비빔밥' },
-            { id: 9, name: '김치찌개' },
-        ],
-    };
+
+    // 서버에서 음식 데이터를 가져오기
+    useEffect(() => {
+        const fetchFoodData = async () => {
+            try {
+                // 메뉴와 음식 데이터를 병렬로 가져옴
+                const [menuResponse, foodResponse] = await Promise.all([
+                    axios.get('/menus'), // 메뉴 데이터
+                    axios.get('/food')  // 음식 데이터
+                ]);
+
+                console.log('메뉴 데이터:', menuResponse.data);
+                console.log('음식 데이터:', foodResponse.data);
+
+                // 메뉴 데이터를 맵으로 변환 (id -> name)
+                const menuMap = menuResponse.data.reduce((acc, menu) => {
+                    acc[menu.id] = menu.name; // id를 키로, name을 값으로 설정
+                    return acc;
+                }, {});
+
+                // 음식 데이터를 카테고리별로 그룹화
+                const groupedFoodData = foodResponse.data.reduce((acc, food) => {
+                    const categoryName = menuMap[food.menu.id] || `카테고리 ${food.menu.id}`; // menu.id로 카테고리 이름 가져오기
+                    if (!acc[categoryName]) {
+                        acc[categoryName] = [];
+                    }
+                    acc[categoryName].push(food);
+                    return acc;
+                }, {});
+
+                console.log('그룹화된 음식 데이터:', groupedFoodData);
+                setFoodData(groupedFoodData); // 상태 업데이트
+            } catch (error) {
+                console.error('데이터 가져오기 실패:', error);
+                alert('음식 및 메뉴 데이터를 불러오는 중 오류가 발생했습니다.');
+            }
+        };
+
+        fetchFoodData();
+    }, []);
+
+
 
     const handleFoodSelection = (food) => {
         if (foodPreferences.find((item) => item.id === food.id)) {
-            // 이미 선택된 음식이면 제거
             setFoodPreferences(foodPreferences.filter((item) => item.id !== food.id));
         } else if (foodPreferences.length < 3) {
-            // 최대 3개까지 선택 가능
             setFoodPreferences([...foodPreferences, food]);
         } else {
             alert('최대 3개의 음식을 선택할 수 있습니다.');
         }
     };
-
 
     const handleProfileImageChange = (e) => {
         setProfileImage(e.target.files[0]);
@@ -70,8 +93,6 @@ function Register() {
             food3: foodPreferences[2] ? { id: foodPreferences[2].id } : null,
         };
 
-
-
         console.log('요청 Body:', requestBody);
 
         try {
@@ -83,7 +104,6 @@ function Register() {
             alert('회원가입 실패: 서버 오류');
         }
     };
-
 
     return (
         <div className="register-container">
@@ -140,11 +160,10 @@ function Register() {
                         type="text"
                         className="register-input"
                         placeholder="선호 음식을 선택하세요"
-                        value={foodPreferences.map(item => item.name).join(', ')} // 음식 이름만 표시
+                        value={foodPreferences.map(item => item.name).join(', ')}
                         onClick={() => setIsPopupOpen(true)}
                         readOnly
                     />
-
                 </div>
                 <div className="register-input-container">
                     <label className="register-icon">📷</label>
@@ -164,14 +183,13 @@ function Register() {
                 <div className="popup-overlay">
                     <div className="popup-content">
                         <h3>선호 음식을 선택하세요 (최대 3개)</h3>
-                        {Object.entries(dummyFoodData).map(([category, foods]) => (
-                            <div key={category}>
-                                <h4 className="category-title">{category}</h4>
+                        {Object.entries(foodData).map(([categoryName, foods]) => (
+                            <div key={categoryName}>
+                                <h4 className="category-title">{categoryName}</h4>
                                 {foods.map((food) => (
                                     <button
                                         key={food.id}
-                                        className={`option-button ${foodPreferences.find((item) => item.id === food.id) ? 'selected' : ''
-                                            }`}
+                                        className={`option-button ${foodPreferences.find((item) => item.id === food.id) ? 'selected' : ''}`}
                                         onClick={() => handleFoodSelection(food)}
                                     >
                                         {food.name}
