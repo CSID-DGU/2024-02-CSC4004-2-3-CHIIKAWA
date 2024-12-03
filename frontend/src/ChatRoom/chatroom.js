@@ -27,48 +27,67 @@ const MessageType = {
 
 const ChatRoom = () => {
   const [message, setMessage] = useState(""); // 메세지 입력창
-  const [messages, setMessages] = useState([  // 화면에 표시되는 메세지들
-    { user: { id: 2, name: "name1" }, chatroom: { id: 1 }, type: MessageType.CHAT, detail: "Hi!", senttime: Date.now() },
-    { user: { id: 3, name: "name2" }, chatroom: { id: 1 }, type: MessageType.CHAT, detail: "Hello.", senttime: Date.now() },
-  ]);
+  const [messages, setMessages] = useState([]); // 메세지 박스
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
 
   const chatBoxRef = useRef(null);
   const stompClient = useRef(null);
 
-  // 유저id, 룸id 불러오기
+  // 현재 유저, 룸 불러오기
   const curUser = JSON.parse(sessionStorage.getItem("user"));
-  // const roomId = sessionStorage.getItem("roomId") || undefined;
-  const chatRooms = JSON.parse(sessionStorage.getItem("chatrooms"));
-  const [curRoom, setChatRoom] = useState(chatRooms[0] || undefined);
-  // id로 가져와?
+  const [curRoom, setChatRoom] = useState();
+  // 채팅방 데이터
+  const [roomList, setChatRoomList] = useState([]);
 
-  console.log(curUser);
+  // 상단 채팅방 이름
+  const [roomName, setRoomName] = useState("");
 
-  const init = async () => {
-    if(curRoom != undefined) {
-      await checkMessageHistory();
+  // 멤버 데이터
+  // const [memberList, setMemberList] = [
+  //   { id: 1, name: "name1", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
+  //   { id: 2, name: "name2", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
+  //   { id: 3, name: "name3", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
+  // ];
+  const memberList = [
+    { id: 1, name: "name1", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
+    { id: 2, name: "name2", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
+    { id: 3, name: "name3", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
+  ];
+
+  useEffect(() => {
+    getChatroomsByUserId();
+  }, []);
+
+  useEffect(() => {
+    refresh();
+    // 컴포넌트 언마운트 시 웹소켓 연결 해제
+    return () => disconnect();
+  }, [curRoom]);
+
+  const refresh = async () => {
+    if (curRoom != undefined) {
+      setRoomName(curRoom.name);
+      await getMessageHistory();
       connect();
     }
   }
 
-  useEffect(() => {
-    init();
-    // 컴포넌트 언마운트 시 웹소켓 연결 해제
-    return () => disconnect();
-  }, []);
+  const getChatroomsByUserId = async () => {
+    const rooms = await axios.get(`/chatrooms/login/${curUser.id}`);
+    setChatRoom(rooms.data[0] || undefined);
+    rooms.data.forEach(room => {
+      room["icon"] = <GroupsIcon sx={{ fontSize: 30, color: "#666" }} />;
+    });
+    setChatRoomList(rooms.data);
+  };
 
   // 채팅 내역 조회하고 불러오기
-  const checkMessageHistory = async () => {
+  const getMessageHistory = async () => {
     try {
-      await axios.get("/messages/" + curRoom.id)
+      await axios.get(`/messages/${curRoom.id}`)
         .then(response => {
-          response.data.forEach(msg => {
-            setMessages((prevMessages) => [...prevMessages, msg])
-          });
-          // 나중에 이걸로 변경
-          //setMessages(response.data);
+          setMessages(response.data);
         });
     } catch (error) {
       console.error('채팅 내역 불러오기 에러:', error);
@@ -105,7 +124,7 @@ const ChatRoom = () => {
       detail: curUser.name + "님이 입장하셨습니다."
     };
 
-    // Tell your username to the server
+    // Tell your message to the server
     stompClient.current.send(`/pub/addUser`, {}, JSON.stringify(joinMessage));
 
     //setMessages((prevMessages) => [...prevMessages, joinMessage]);
@@ -144,29 +163,16 @@ const ChatRoom = () => {
     }
   };
 
+  const asd = () => {
+    console.log("aaaa");
+  }
+
   // 추가 메세지가 있으면 자동으로 스크롤을 제일 하단으로 내림
   useEffect(() => {
     if (chatBoxRef.current) {
       chatBoxRef.current.scrollTop = chatBoxRef.current.scrollHeight;
     }
   }, [messages]);
-
-  // 임시 그룹 데이터
-  const groupList = [
-    { id: 1, name: "group1", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
-    { id: 2, name: "group2", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
-    { id: 3, name: "group3", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
-  ];
-
-  // 임시 멤버 데이터
-  const memberList = [
-    { id: 1, name: "name1", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
-    { id: 2, name: "name2", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
-    { id: 3, name: "name3", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
-  ];
-
-  // 상단 채팅방 이름
-  const [roomName, setRoomName] = useState(curRoom?.name || "");
 
   return (
     <>
@@ -190,11 +196,16 @@ const ChatRoom = () => {
             <div className="sidebar-title">채팅방 목록</div>
           </div>
           <div className="group-list">
-            {groupList.map((group) => (
-              <ChatGroup group={group} onClick={(e) => {
-                console.log(e.target.value);
-                setChatRoom(e.target.value);
-              }} />
+            {roomList.map((room) => (
+              <ChatGroup
+                group={room}
+                onClick={(e) => {
+                  if (curRoom.id != room.id) {
+                    alert(1);
+                    setChatRoom(room);
+                    refresh();
+                  }
+                }} />
             ))}
           </div>
         </div>
@@ -220,6 +231,12 @@ const ChatRoom = () => {
           <div className="message-input-container">
             <IconButton color="primary" component="label" className="icon-button">
               <PhotoCamera sx={{ color: "#4caf50" }} />
+              {/* <input
+                type="file"
+                className="input-camera"
+                accept="image/jpg, image/jpeg, image/png"
+                multiple
+              /> */}
             </IconButton>
             <input
               type="text"

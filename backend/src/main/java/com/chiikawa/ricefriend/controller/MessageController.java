@@ -49,8 +49,8 @@ public class MessageController {
     public ResponseEntity<String> receiveMessage(@RequestBody MessageDto.MessageSaveDto messageDto) {
         System.out.println("=================== SENT ===================");
 
-        // 메시지 저장
-        //Message chatMessage = messageService.saveMessage(messageDto);
+        // 메시지 저장 <=   이거 풀면 저장되는데 저거 메세지 db에 다 남아서 저 ㅈ됨
+        messageService.saveMessage(messageDto);
 
         // 메시지를 해당 채팅방 구독자들에게 전송
         messagingTemplate.convertAndSend("/sub/chatroom/" + messageDto.getChatroom().getId(), messageDto);
