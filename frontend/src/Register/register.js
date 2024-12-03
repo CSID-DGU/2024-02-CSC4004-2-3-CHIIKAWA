@@ -77,7 +77,7 @@ function Register() {
         try {
             const response = await axios.post('/users', requestBody);
             console.log('회원가입 성공:', response.data);
-            navigate('/swipe');
+            navigate('/login');
         } catch (error) {
             console.error('회원가입 실패:', error);
             alert('회원가입 실패: 서버 오류');
