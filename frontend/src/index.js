@@ -9,6 +9,7 @@ import Login from './Login/login'
 import Swipe from './Swipe/swipe'
 import OpenChat from './OpenChat/openchat'
 import Register from './Register/register'
+import Rating from './Rating/rating'
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -22,6 +23,7 @@ root.render(
         <Route path="swipe" element={<Swipe />} />
         <Route path="openchat" element={<OpenChat />} />
         <Route path="register" element={<Register />} />
+        <Route path="rating" element={<Rating />} />
       </Routes>
     </BrowserRouter>
 );
