@@ -19,9 +19,22 @@ public class ChatPartController {
     private final ChatPartService chatpartService;
 
     // chatpart 등록
+//    @PostMapping
+//    public ResponseEntity<ChatPartDto.ChatPartSaveDto> saveChatPart(@RequestBody ChatPartDto.ChatPartSaveDto requestDto) {
+//        chatpartService.saveChatPart(requestDto);
+//
+//        //return ResponseEntity.status(HttpStatus.CREATED).build();
+//        return new ResponseEntity<>(HttpStatus.CREATED);
+//    }
+
+    // chatpart 등록
     @PostMapping
-    public ResponseEntity<ChatPartDto.ChatPartSaveDto> saveChatPart(@RequestBody ChatPartDto.ChatPartSaveDto requestDto) {
-        chatpartService.saveChatPart(requestDto);
+    public ResponseEntity<ChatPartDto.ChatPartSaveDto> saveChatPartbyCompositeId(@RequestParam int userid, @RequestParam int roomid) {
+        System.out.println("====================SAVE====================");
+        System.out.println(userid);
+        System.out.println(roomid);
+
+        chatpartService.saveChatPartbyCompositeId(userid, roomid);
 
         //return ResponseEntity.status(HttpStatus.CREATED).build();
         return new ResponseEntity<>(HttpStatus.CREATED);

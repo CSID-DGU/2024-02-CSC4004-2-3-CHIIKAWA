@@ -21,6 +21,9 @@ public class UserController {
     public ResponseEntity<UserDto.UserResponseDto> login(@PathVariable String email, @PathVariable String pw) {
         UserDto.UserResponseDto responseDto = userService.login(email, pw);
 
+        System.out.println("=====================^^======================");
+        System.out.println(responseDto.getName());
+
         return ResponseEntity.ok(responseDto);
     }
 

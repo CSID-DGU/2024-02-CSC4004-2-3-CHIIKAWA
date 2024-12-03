@@ -21,6 +21,7 @@ function Login() {
             // 사용자 정보 저장 (예: accessToken, userId 등)
             sessionStorage.setItem('accessToken', response.data.accessToken);
             sessionStorage.setItem('userName', response.data.userName); // 사용자 이름 등 추가 정보 저장 가능
+            sessionStorage.setItem('userId', response.data.id); //id 저장
 
             // 로그인 성공 시 swipe 페이지로 이동
             navigate('/swipe');
