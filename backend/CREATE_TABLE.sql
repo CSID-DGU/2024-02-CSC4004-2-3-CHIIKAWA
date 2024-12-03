@@ -58,11 +58,52 @@ CREATE TABLE `message` (
   FOREIGN KEY (`roomid`) REFERENCES `chatroom` (`id`)
 );
 
-INSERT INTO menucategory (name)
-VALUES ("분식");
+INSERT INTO menucategory(name) VALUES("분식");
+INSERT INTO menucategory(name) VALUES("한식");
+INSERT INTO menucategory(name) VALUES("양식");
+INSERT INTO menucategory(name) VALUES("중식");
+INSERT INTO menucategory(name) VALUES("일식");
+INSERT INTO menucategory(name) VALUES("야식");
+INSERT INTO menucategory(name) VALUES("카페·디저트");
 
-INSERT INTO foodcategory (menuid, name)
-VALUES (1, "떡볶이");
+INSERT INTO foodcategory(menuid, name) VALUES(1, "떡볶이");
+INSERT INTO foodcategory(menuid, name) VALUES(1, "순대");
+INSERT INTO foodcategory(menuid, name) VALUES(1, "튀김");
+INSERT INTO foodcategory(menuid, name) VALUES(1, "김밥");
+INSERT INTO foodcategory(menuid, name) VALUES(1, "라면");
+INSERT INTO foodcategory(menuid, name) VALUES(1, "어묵");
+INSERT INTO foodcategory(menuid, name) VALUES(2, "비빔밥");
+INSERT INTO foodcategory(menuid, name) VALUES(2, "국밥");
+INSERT INTO foodcategory(menuid, name) VALUES(2, "제육볶음");
+INSERT INTO foodcategory(menuid, name) VALUES(2, "삼겹살");
+INSERT INTO foodcategory(menuid, name) VALUES(2, "찜닭");
+INSERT INTO foodcategory(menuid, name) VALUES(2, "김치찌개");
+INSERT INTO foodcategory(menuid, name) VALUES(3, "파스타");
+INSERT INTO foodcategory(menuid, name) VALUES(3, "피자");
+INSERT INTO foodcategory(menuid, name) VALUES(3, "스테이크");
+INSERT INTO foodcategory(menuid, name) VALUES(3, "햄버거");
+INSERT INTO foodcategory(menuid, name) VALUES(3, "핫도그");
+INSERT INTO foodcategory(menuid, name) VALUES(4, "짜장면");
+INSERT INTO foodcategory(menuid, name) VALUES(4, "볶음밥");
+INSERT INTO foodcategory(menuid, name) VALUES(4, "마라탕");
+INSERT INTO foodcategory(menuid, name) VALUES(4, "군만두");
+INSERT INTO foodcategory(menuid, name) VALUES(5, "초밥");
+INSERT INTO foodcategory(menuid, name) VALUES(5, "사시미");
+INSERT INTO foodcategory(menuid, name) VALUES(5, "돈까스");
+INSERT INTO foodcategory(menuid, name) VALUES(5, "라멘");
+INSERT INTO foodcategory(menuid, name) VALUES(5, "우동");
+INSERT INTO foodcategory(menuid, name) VALUES(5, "카레");
+INSERT INTO foodcategory(menuid, name) VALUES(5, "소바");
+INSERT INTO foodcategory(menuid, name) VALUES(6, "족발");
+INSERT INTO foodcategory(menuid, name) VALUES(6, "보쌈");
+INSERT INTO foodcategory(menuid, name) VALUES(6, "곱창");
+INSERT INTO foodcategory(menuid, name) VALUES(6, "닭발");
+INSERT INTO foodcategory(menuid, name) VALUES(6, "파전");
+INSERT INTO foodcategory(menuid, name) VALUES(7, "커피");
+INSERT INTO foodcategory(menuid, name) VALUES(7, "케이크");
+INSERT INTO foodcategory(menuid, name) VALUES(7, "와플");
+INSERT INTO foodcategory(menuid, name) VALUES(7, "베이글");
+INSERT INTO foodcategory(menuid, name) VALUES(7, "샐러드");
 
 INSERT INTO user (email, password, name, favfood_id1)
 VALUES ("admin@boss.com", "123", "정준혁", 1);
