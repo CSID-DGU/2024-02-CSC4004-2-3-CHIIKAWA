@@ -14,12 +14,12 @@ const ChatMessage = ({ msg, isSender }) => {
 
     return (
         <div className={`chat-message-container ${isSender ? "sender" : "receiver"}`} key={msg.user.id}>
-            {!isSender &&
+            {!isSender && isChat &&
                 <div className="avatar-message">
                     <AccountCircleOutlinedIcon sx={{ fontSize: 40, color: "#4caf50" }} />
                 </div>}
             <div className="message-content">
-                {!isSender && <div className="username">{msg.user.name}</div>}
+                {!isSender && isChat && <div className="username">{msg.user.name}</div>}
                 <div className={`${isChat ? "chat-message" : "event-message"}`}>
                     {msg.detail}
                     {isChat && <div className="message-time">{new Date(msg.senttime).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}</div>}

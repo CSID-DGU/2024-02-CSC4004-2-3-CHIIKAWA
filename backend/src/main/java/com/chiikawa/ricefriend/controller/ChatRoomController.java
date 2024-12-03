@@ -34,20 +34,28 @@ public class ChatRoomController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // 채팅방 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<ChatRoomDto.ChatRoomResponseDto> getChatRoomById(@PathVariable int id) {
-        ChatRoomDto.ChatRoomResponseDto responseDto = chatroomService.getChatRoomById(id);
-
-        return ResponseEntity.ok(responseDto);
-    }
-
     // 전체 채팅방 조회
     @GetMapping
     public ResponseEntity<List<ChatRoomDto.ChatRoomResponseDto>> getRoomList() {
         List<ChatRoomDto.ChatRoomResponseDto> roomList = chatroomService.getAllChatRooms();
 
         return ResponseEntity.ok(roomList);
+    }
+
+    // 유저 아이디를 활용한 채팅방 전체 조회
+    @GetMapping("/login/{userid}")
+    public ResponseEntity<List<ChatRoomDto.ChatRoomResponseDto>> getChatRoomByUserId(@PathVariable int userid) {
+        List<ChatRoomDto.ChatRoomResponseDto> roomList = chatroomService.getAllChatRoomsByUserId(userid);
+
+        return ResponseEntity.ok(roomList);
+    }
+
+    // 채팅방 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<ChatRoomDto.ChatRoomResponseDto> getChatRoomById(@PathVariable int id) {
+        ChatRoomDto.ChatRoomResponseDto responseDto = chatroomService.getChatRoomById(id);
+
+        return ResponseEntity.ok(responseDto);
     }
 
     // 채팅방 삭제

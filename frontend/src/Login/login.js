@@ -13,15 +13,17 @@ function Login() {
 
         try {
             // 로그인 API 호출
-            const response = await axios.get(`/users/${email}/${password}`);
+            const resUser = await axios.get(`/users/${email}/${password}`);
+            const resChatRooms = await axios.get(`/chatrooms/login/${resUser.data.id}`);
 
             // 성공 처리
-            console.log('로그인 성공:', response.data);
+            console.log('로그인 성공:', resUser.data);
+            console.log('채팅방:', resChatRooms.data);
 
             // 사용자 정보 저장 (예: accessToken, userId 등)
-            sessionStorage.setItem('accessToken', response.data.accessToken);
-            sessionStorage.setItem('userName', response.data.userName); // 사용자 이름 등 추가 정보 저장 가능
-            sessionStorage.setItem('userId', response.data.id); //id 저장
+            sessionStorage.setItem('accessToken', resUser.data.accessToken);
+            sessionStorage.setItem('user', JSON.stringify(resUser.data)); // 사용자 이름 등 추가 정보 저장 가능
+            sessionStorage.setItem('chatrooms', JSON.stringify(resChatRooms.data));
 
             // 로그인 성공 시 swipe 페이지로 이동
             navigate('/swipe');

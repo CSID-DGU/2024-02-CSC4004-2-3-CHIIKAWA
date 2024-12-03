@@ -38,14 +38,19 @@ const ChatRoom = () => {
   const stompClient = useRef(null);
 
   // 유저id, 룸id 불러오기
-  // const curUser = localStorage.getItem("user");
+  const curUser = JSON.parse(sessionStorage.getItem("user"));
   // const roomId = sessionStorage.getItem("roomId") || undefined;
-  const curUser = { id: 1, name: "정준혁", };
-  const curRoom = { id: 1, name: "채팅방 1" };
+  const chatRooms = JSON.parse(sessionStorage.getItem("chatrooms"));
+  const [curRoom, setChatRoom] = useState(chatRooms[0] || undefined);
+  // id로 가져와?
+
+  console.log(curUser);
 
   const init = async () => {
-    await checkMessageHistory();
-    await connect();
+    if(curRoom != undefined) {
+      await checkMessageHistory();
+      connect();
+    }
   }
 
   useEffect(() => {
@@ -161,7 +166,7 @@ const ChatRoom = () => {
   ];
 
   // 상단 채팅방 이름
-  const [roomName, setRoomName] = useState(curRoom.name);
+  const [roomName, setRoomName] = useState(curRoom?.name || "");
 
   return (
     <>
@@ -186,7 +191,10 @@ const ChatRoom = () => {
           </div>
           <div className="group-list">
             {groupList.map((group) => (
-              <ChatGroup group={group} />
+              <ChatGroup group={group} onClick={(e) => {
+                console.log(e.target.value);
+                setChatRoom(e.target.value);
+              }} />
             ))}
           </div>
         </div>
