@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+
 import './mypage.css';
 
 const MyPage = () => {
@@ -84,8 +85,8 @@ const MyPage = () => {
 
     return (
         <div className="mypage-container">
-            <h2>마이페이지</h2>
-            <p>안녕하세요, {name}님!</p>
+            <h2 className='mypage-title'>마이페이지</h2>
+            <p className='mypage-introduce'>안녕하세요, {name}님!</p>
             <img
                     src="https://via.placeholder.com/150"
                     alt="Profile"
@@ -106,7 +107,7 @@ const MyPage = () => {
                 )}
             <button onClick={() => setIsEditingName(true)} className="edit-button">닉네임 수정</button>
                 
-            <h3>선호 음식</h3>
+            <h3 className='mypage-favfood'>선호 음식</h3>
             <div>
                 {foodPreferences.length > 0 ? (
                     foodPreferences.map((food) => (
@@ -123,7 +124,7 @@ const MyPage = () => {
             {isPopupOpen && (
                 <div className="popup-overlay">
                     <div className="popup-content">
-                        <h3>선호 음식을 선택하세요 (최대 3개)</h3>
+                        <h3 className='mypage-popuptitle'>선호 음식을 선택하세요 (최대 3개)</h3>
                         {Object.entries(foodData).map(([categoryName, foods]) => (
                             <div key={categoryName}>
                                 <h4 className="category-title">{categoryName}</h4>

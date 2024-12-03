@@ -1,15 +1,18 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 
 import "./chatgroup.css";
 
 const ChatGroup = ({ user, group, isCurRoom, onClick, onDisconnected }) => {
+    const navigate = useNavigate();
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
     const onClickQuit = async () => {
         await axios.delete(`/chatparts/delete/${user.id}/${group.id}`)
         setIsPopupOpen(false);
         onDisconnected();
+        navigate('/chatroom');
     }
 
     return (
