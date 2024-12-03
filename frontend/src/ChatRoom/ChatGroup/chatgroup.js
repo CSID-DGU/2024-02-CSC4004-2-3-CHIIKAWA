@@ -1,24 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import axios from "axios";
 
 import "./chatgroup.css";
 
-const ChatGroup = ({ user, group, isCurRoom, onClick }) => {
-    const onClose = async() => {
-        await axios.delete(`/delete/${user.id}/${group.id}`)
+const ChatGroup = ({ user, group, isCurRoom, onClick, onDisconnected }) => {
+    const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+    const onClickQuit = async () => {
+        await axios.delete(`/chatparts/delete/${user.id}/${group.id}`)
+        setIsPopupOpen(false);
+        onDisconnected();
     }
 
     return (
         <div className={`${isCurRoom ? "current-group-item" : "group-item"}`} key={group.id} onClick={onClick}>
             <div className="group-icon">{group.icon}</div>
             <div className="group-name">{group.name}</div>
-            <button className="close-button" onClick={(e) => { 
-                e.stopPropagation(); // 클릭 이벤트가 부모로 전파되지 않도록 설정
-                onClose(group.id); // 닫기 이벤트 호출
-            }}>
+            <button className="close-button" onClick={() => setIsPopupOpen(true)}>
                 ×
             </button>
+            {isPopupOpen && (
+                <div className="popup-overlay">
+                    <div className="popup-content">
+                        <h3 className="group-name">{group.name}</h3>
+                        <h3>채팅방을 정말로 나가시겠습니까?</h3>
+                        <button
+                            onClick={onClickQuit}
+                            className="yes-button">
+                            예
+                        </button>
+                        <button
+                            onClick={() => setIsPopupOpen(false)}
+                            className="no-button">
+                            아니오
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
+
+
     );
 };
 

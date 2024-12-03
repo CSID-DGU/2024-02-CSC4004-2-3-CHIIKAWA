@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 
 import axios from 'axios';
 import { Stomp, CompatClient } from '@stomp/stompjs';
+import { useLocation } from 'react-router-dom'
 
 import IconButton from "@mui/material/IconButton";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
@@ -25,7 +26,7 @@ const MessageType = {
   LEAVE: "LEAVE"
 };
 
-const ChatRoom = () => {
+const ChatRoom = ({ route, navigate }) => {
   const [message, setMessage] = useState(""); // 메세지 입력창
   const [messages, setMessages] = useState([]); // 메세지 박스
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
@@ -35,8 +36,15 @@ const ChatRoom = () => {
   const stompClient = useRef(null);
 
   // 현재 유저, 룸 불러오기
-  const curUser = JSON.parse(sessionStorage.getItem("user"));
+  const curUser = JSON.parse(sessionStorage.getItem('user')); // 초기값을 null로 설정
   const [curRoom, setChatRoom] = useState();
+
+  console.log(route?.params.roomid);
+
+  // navigate를 통해 입장했을 때
+  const location = useLocation();
+  const [navigatedRoom, setNavigatedRoom] = useState(location?.state?.room);
+
   // 채팅방 데이터
   const [roomList, setChatRoomList] = useState([]);
 
@@ -57,7 +65,8 @@ const ChatRoom = () => {
   }, [curRoom]);
 
   const refresh = async () => {
-    if (curRoom != undefined) {
+    console.log(curRoom);
+    if (curUser && curRoom) {
       await getMembersByRoomId();
       setRoomName(curRoom.name);
       await getMessageHistory();
@@ -67,10 +76,17 @@ const ChatRoom = () => {
 
   const getChatroomsByUserId = async () => {
     const rooms = await axios.get(`/chatrooms/chatroom/${curUser.id}`);
-    setChatRoom(rooms.data[0] || undefined);
+
+    if (navigatedRoom == undefined) {
+      setChatRoom(rooms.data[0] || undefined);
+    } else {
+      setChatRoom(navigatedRoom);
+    }
+
     rooms.data.forEach(room => {
       room["icon"] = <GroupsIcon sx={{ fontSize: 30, color: "#666" }} />;
     });
+
     setChatRoomList(rooms.data);
   };
 
@@ -111,23 +127,35 @@ const ChatRoom = () => {
     // Subscribe to the Public Topic
     stompClient.current.subscribe(`/sub/chatroom/${curRoom.id}`, (msg) => {
       const newMessage = JSON.parse(msg.body);
-      if (newMessage.type == MessageType.LEAVE) {
-        newMessage.detail = `${newMessage.user.name}님이 퇴장하셨습니다.`;
-      }
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
-    const joinMessage = {
-      user: curUser,
-      chatroom: curRoom,
-      type: MessageType.JOIN,
-      detail: curUser.name + "님이 입장하셨습니다."
-    };
+    if (navigatedRoom) {
+      console.log(navigatedRoom);
 
-    // Tell your message to the server
-    stompClient.current.send(`/pub/addUser`, {}, JSON.stringify(joinMessage));
+      const joinMessage = {
+        user: curUser,
+        chatroom: curRoom,
+        type: MessageType.JOIN,
+        detail: curUser.name + "님이 입장하셨습니다."
+      };
+      
+      // Tell your message to the server
+      stompClient.current.send(`/pub/addUser`, {}, JSON.stringify(joinMessage));
+      setNavigatedRoom(null);
+    }
+  }
 
-    //setMessages((prevMessages) => [...prevMessages, joinMessage]);
+  const onDisconnected = () => {
+      const leaveMessage = {
+        user: curUser,
+        chatroom: curRoom,
+        type: MessageType.LEAVE,
+        detail: curUser.name + "님이 퇴장하셨습니다."
+      };
+
+      // Tell your message to the server
+      stompClient.current.send(`/pub/leaveUser`, {}, JSON.stringify(leaveMessage));
   }
 
   function onError(error) {
@@ -163,10 +191,6 @@ const ChatRoom = () => {
     }
   };
 
-  const asd = () => {
-    console.log("aaaa");
-  }
-
   // 추가 메세지가 있으면 자동으로 스크롤을 제일 하단으로 내림
   useEffect(() => {
     if (chatBoxRef.current) {
@@ -181,7 +205,7 @@ const ChatRoom = () => {
 
       <div className="chat-room-container">
         {/* 기존의 ChatRoom 전용 헤더 */}
-        <header>
+        <header className="chat-header">
           <IconButton color="primary" className="icon-button" onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)} sx={{ color: "#4caf50" }}>
             <ChatIcon />
           </IconButton>
@@ -205,7 +229,8 @@ const ChatRoom = () => {
                   if (curRoom.id != room.id) {
                     setChatRoom(room);
                   }
-                }} />
+                }}
+                onDisconnected={onDisconnected} />
             ))}
           </div>
         </div>

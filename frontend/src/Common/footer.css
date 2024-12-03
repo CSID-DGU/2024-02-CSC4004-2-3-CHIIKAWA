@@ -1,42 +1,38 @@
 .footer {
   display: flex;
-  justify-content: center;
   align-items: center;
-  padding: 10px 20px;
-  background-color: #fff4e6 ;
-  /* 배경색 */
+  justify-content: center;
+  background-color: #fff4e6;
   border: none !important;
-  box-shadow: 0px -2px 3px #000000 ;
-  position: fixed;
-  bottom: 0;
-  width: 30% !important;
-  /* 푸터 너비를 80%로 설정 * !important/
+  width: 357px !important;
+  position: absolute;
+  bottom: 20px;
   left: 50%;
-  /* 왼쪽에서 중앙 정렬 시작 */
   transform: translateX(-50%);
-  /* 수평 중앙 정렬 */
-  border-radius: 15px;
-  /* 모서리 둥글게 */
-  z-index: 1000;
+  padding: 18px;
+  text-align: center;
+  border-radius: 37px;
+  box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.2);
   /* 다른 요소 위로 표시 */
+  z-index: 1000;
 }
 
 .icon-container {
   display: flex;
-  gap: 60px;
+  gap: 70px;
   /* 아이콘 간의 간격 설정 (기본 40px로 설정) */
 }
 
 .footer-icon {
-  width: 70px;
+  width: 65px;
   /* 아이콘 너비 */
-  height: 70px;
+  height: 65px;
   /* 아이콘 높이 */
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.6s ease;
 }
 
 .footer-icon:hover {
-  transform: scale(1.2);
+  transform: scale(1.1);
   /* 호버 시 아이콘 확대 */
 }

@@ -30,7 +30,7 @@ public class MessageController {
     private SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/addUser")
-    public ResponseEntity<String> addUser(@Payload MessageDto.MessageResponseDto messageDto, SimpMessageHeaderAccessor headerAccessor){
+    public ResponseEntity<String> addUser(@Payload MessageDto.MessageSaveDto messageDto, SimpMessageHeaderAccessor headerAccessor){
         System.out.println("=================== JOIN ===================");
 
         User user = messageDto.getUser();
@@ -38,6 +38,23 @@ public class MessageController {
 
         headerAccessor.getSessionAttributes().put("user", user);
         headerAccessor.getSessionAttributes().put("chatroom", chatroom);
+
+        // 메시지 저장
+        messageService.saveMessage(messageDto);
+
+        // 메시지를 해당 채팅방 구독자들에게 전송
+        messagingTemplate.convertAndSend("/sub/chatroom/" + chatroom.getId(), messageDto);
+        return ResponseEntity.ok("메시지 전송 완료");
+    }
+
+    @MessageMapping("/leaveUser")
+    public ResponseEntity<String> leaveUser(@Payload MessageDto.MessageSaveDto messageDto, SimpMessageHeaderAccessor headerAccessor){
+        System.out.println("=================== JOIN ===================");
+
+        ChatRoom chatroom = messageDto.getChatroom();
+
+        // 메시지 저장
+        messageService.saveMessage(messageDto);
 
         // 메시지를 해당 채팅방 구독자들에게 전송
         messagingTemplate.convertAndSend("/sub/chatroom/" + chatroom.getId(), messageDto);
@@ -49,7 +66,7 @@ public class MessageController {
     public ResponseEntity<String> receiveMessage(@RequestBody MessageDto.MessageSaveDto messageDto) {
         System.out.println("=================== SENT ===================");
 
-        // 메시지 저장 <=   이거 풀면 저장되는데 저거 메세지 db에 다 남아서 저 ㅈ됨
+        // 메시지 저장
         messageService.saveMessage(messageDto);
 
         // 메시지를 해당 채팅방 구독자들에게 전송

@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import "./openchat.css";
 import Footer from "../Common/footer";
 import Header from "../Common/header";
 
 const OpenChat = () => {
+  const navigate = useNavigate();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [chatRooms, setChatRooms] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -15,8 +18,8 @@ const OpenChat = () => {
   const [userId, setUserId] = useState(null); 
 
   useEffect(() => {
-    const storedUserId = sessionStorage.getItem('userId');
-    setUserId(storedUserId);
+    const storedUser = JSON.parse(sessionStorage.getItem('user'));
+    setUserId(storedUser.id);
     const fetchChatRooms = async () => {
       try {
         const response = await axios.get("/chatrooms");
@@ -51,9 +54,10 @@ const OpenChat = () => {
 
     try {
       const responseData = await axios.post(`/chatparts?userid=${userId}&roomid=${selectedRoom.id}`);
-  
+
       console.log(responseData.data);
       setIsJoinModalOpen(false);
+      navigate(`/chatroom`, { state: { room: selectedRoom } });
     } catch (error) {
       console.error("채팅방에 참여하는 중 오류가 발생했습니다.", error);
     }

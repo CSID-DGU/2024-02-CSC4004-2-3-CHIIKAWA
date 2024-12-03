@@ -24,29 +24,29 @@ public class WebSocketEventListener {
     @Autowired
     private SimpMessageSendingOperations messagingTemplate;
 
-    @EventListener
-    public void handleWebSocketConnectListener(SessionConnectedEvent event) {
-        logger.info("Received a new web socket connection");
-    }
+//    @EventListener
+//    public void handleWebSocketConnectListener(SessionConnectedEvent event) {
+//        logger.info("Received a new web socket connection");
+//    }
 
-    @EventListener
-    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
-        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
-        System.out.println(headerAccessor.getSessionAttributes());
-        User user = (User) headerAccessor.getSessionAttributes().get("user");
-        ChatRoom chatroom = (ChatRoom) headerAccessor.getSessionAttributes().get("chatroom");
-
-        System.out.println("=================LEAVE==================");
-
-        if(user != null) {
-            logger.info("User Disconnected : " + user.getName());
-
-            MessageDto.MessageResponseDto chatMessage = new MessageDto.MessageResponseDto();
-            chatMessage.setUser(user);
-            chatMessage.setChatroom(chatroom);
-            chatMessage.setType(MessageType.LEAVE);
-
-            messagingTemplate.convertAndSend("/sub/chatroom/" + chatMessage.getChatroom().getId(), chatMessage);
-        }
-    }
+//    @EventListener
+//    public void handleWebSocketDisconnectListener(SessionDisconnectEvent event) {
+//        StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
+//        System.out.println(headerAccessor.getSessionAttributes());
+//        User user = (User) headerAccessor.getSessionAttributes().get("user");
+//        ChatRoom chatroom = (ChatRoom) headerAccessor.getSessionAttributes().get("chatroom");
+//
+//        System.out.println("=================LEAVE==================");
+//
+//        if(user != null) {
+//            logger.info("User Disconnected : " + user.getName());
+//
+//            MessageDto.MessageResponseDto chatMessage = new MessageDto.MessageResponseDto();
+//            chatMessage.setUser(user);
+//            chatMessage.setChatroom(chatroom);
+//            chatMessage.setType(MessageType.LEAVE);
+//
+//            messagingTemplate.convertAndSend("/sub/chatroom/" + chatMessage.getChatroom().getId(), chatMessage);
+//        }
+//    }
 }
