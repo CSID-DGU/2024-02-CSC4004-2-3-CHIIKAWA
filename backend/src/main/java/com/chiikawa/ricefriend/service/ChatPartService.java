@@ -20,9 +20,16 @@ public class ChatPartService {
     private ChatPartRepository chatpartRepository;
 
     public ChatPart saveChatPart(ChatPartDto.ChatPartSaveDto requestDto) {
+        System.out.println("====================== SAVE_CHATPART ======================");
+        System.out.println(requestDto.getUser());
+        System.out.println(requestDto.getChatroom());
         ChatPart chatpart = requestDto.toEntity();
 
         return chatpartRepository.save(chatpart);
+    }
+
+    public void saveChatPartbyCompositeId(int userid, int roomid) {
+        chatpartRepository.saveByCompositeId(userid, roomid);
     }
 
     public List<ChatPartDto.ChatPartResponseDto> getAllChatParts() {
