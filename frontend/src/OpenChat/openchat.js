@@ -12,8 +12,11 @@ const OpenChat = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [newRoom, setNewRoom] = useState({ name: "", limitednum: 2, state: "모집 중" });
+  const [userId, setUserId] = useState(null); 
 
   useEffect(() => {
+    const storedUserId = sessionStorage.getItem('userId');
+    setUserId(storedUserId);
     const fetchChatRooms = async () => {
       try {
         const response = await axios.get("/chatrooms");
@@ -41,41 +44,20 @@ const OpenChat = () => {
   };
 
   const handleJoinRoom = async () => {
-  
+    if (!userId) {
+      alert("로그인된 사용자만 참여할 수 있습니다.");
+      return;
+    }
+
     try {
-      const userData = {
-        user: {
-          id: 3,
-          email: "test@test",
-          password: "test",
-          name: "최민성",
-          state: "모집 중",
-          profileimg: null,
-          food1: {
-            id: 1,
-            menu: { id: 1, name: "분식" },
-            name: "분식",
-          },
-        },
-        chatroom: {
-          id: selectedRoom.id,
-          name: selectedRoom.title,
-          state: selectedRoom.state,
-          limitednum: selectedRoom.members,
-        },
-      };
-
-      const responseData = await axios.post('/chatparts', userData);
-
+      const responseData = await axios.post(`/chatparts?userid=${userId}&roomid=${selectedRoom.id}`);
+  
       console.log(responseData.data);
       setIsJoinModalOpen(false);
     } catch (error) {
       console.error("채팅방에 참여하는 중 오류가 발생했습니다.", error);
     }
-  };
-  
-  
-  
+  };  
 
   const handleCreateRoom = async () => {
     try {
