@@ -16,10 +16,18 @@ const OpenChat = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
   const [newRoom, setNewRoom] = useState({ name: "", limitednum: 2, state: "모집 중" });
-  const [userId, setUserId] = useState(null); 
+  const [userId, setUserId] = useState(null);
 
   useEffect(() => {
     const storedUser = JSON.parse(sessionStorage.getItem('user'));
+
+    // 로그인 정보가 없으면 로그인창으로 쫓겨남
+    if (!storedUser || !storedUser.id) {
+      alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
+      navigate("/login");
+      return;
+    }
+
     setUserId(storedUser.id);
     const fetchChatRooms = async () => {
       try {
@@ -29,9 +37,12 @@ const OpenChat = () => {
           title: room.name,
           state: room.state,
           members: room.limitednum,
+          currentParticipants: 0,
         }));
         setChatRooms(mappedData);
         setIsLoading(false);
+
+        await fetchParticipants(response.data.map((room) => room.id));
       } catch (error) {
         console.error("채팅방 데이터를 불러오는 중 오류가 발생했습니다.", error);
         setChatRooms([]);
@@ -40,7 +51,36 @@ const OpenChat = () => {
     };
 
     fetchChatRooms();
-  }, []);
+  }, [navigate]);
+
+  // 방 현재 인원 확인
+  const fetchParticipants = async (roomIds) => {
+    try {
+      const response = await axios.get("/chatparts");
+      const participantCounts = {};
+
+      response.data.forEach((entry) => {
+        const roomId = entry.chatroom.id;
+        if (!participantCounts[roomId]) {
+          participantCounts[roomId] = 0;
+        }
+        participantCounts[roomId] += 1;
+      });
+
+      setChatRooms((prevRooms) =>
+        prevRooms.map((room) =>
+          roomIds.includes(room.id)
+            ? {
+                ...room,
+                currentParticipants: participantCounts[room.id] || 0,
+              }
+            : room
+        )
+      );
+    } catch (error) {
+      console.error("참여 인원 데이터를 불러오는 중 오류가 발생했습니다.", error);
+    }
+  };
 
   const handleRoomClick = (room) => {
     setSelectedRoom(room);
@@ -55,21 +95,31 @@ const OpenChat = () => {
 
     try {
       const responseData = await axios.post(`/chatparts?userid=${userId}&roomid=${selectedRoom.id}`);
-
       console.log(responseData.data);
       setIsJoinModalOpen(false);
       navigate(`/chatroom`, { state: { room: selectedRoom } });
     } catch (error) {
       console.error("채팅방에 참여하는 중 오류가 발생했습니다.", error);
     }
-  };  
+  };
 
   const handleCreateRoom = async () => {
     try {
+      // 방 생성
       const response = await axios.post("/chatrooms", newRoom);
-      setChatRooms([...chatRooms, { id: response.data.id, ...newRoom }]);
+      const createdRoom = response.data;
+
+      // 생성된 방에 참가
+      await axios.post(`/chatparts?userid=${userId}&roomid=${createdRoom.id}`);
+
+      // 새로 생성된 방 추가
+      setChatRooms([...chatRooms, { id: createdRoom.id, ...newRoom }]);
       setNewRoom({ name: "", state: "모집 중", limitednum: 1 });
       setIsCreateModalOpen(false);
+
+      // 참가 후 자동으로 해당 방으로 이동
+      setSelectedRoom({ id: createdRoom.id, title: createdRoom.name });
+      setIsJoinModalOpen(true);
     } catch (error) {
       console.error("방 생성 중 오류가 발생했습니다.", error);
     }
@@ -107,7 +157,7 @@ const OpenChat = () => {
                     <div>
                       <h3>{room.title}</h3>
                       <p>상태: {room.state}</p>
-                      <span>정원: {room.members}명</span>
+                      <span>현재 인원: {room.currentParticipants || 0} / {room.members}명</span>
                     </div>
                   </div>
                 </div>
@@ -149,7 +199,7 @@ const OpenChat = () => {
             <div className="modal-content">
               <h2>{selectedRoom.title}</h2>
               <p>상태: {selectedRoom.state}</p>
-              <p>정원: {selectedRoom.members}명</p>
+              <p>정원: {selectedRoom.currentParticipants || 0} / {selectedRoom.members}명</p>
               <button onClick={handleJoinRoom}>참가</button>
               <button onClick={() => setIsJoinModalOpen(false)}>닫기</button>
             </div>
