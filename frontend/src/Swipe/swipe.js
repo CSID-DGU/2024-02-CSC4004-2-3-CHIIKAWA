@@ -1,33 +1,66 @@
 import React, { useState } from 'react';
 import TinderCard from 'react-tinder-card';
+import axios from 'axios';
 import confetti from 'canvas-confetti';
 import './swipe.css'; // CSS 파일
 import '../common.css';
 import Footer from '../Common/footer';
 import Header from '../Common/header';
+
 const db = [
-    { name: 'Hamburger', url: process.env.PUBLIC_URL + '/hamburger.jpg' },
-    { name: 'Pizza', url: process.env.PUBLIC_URL + '/pizza.jpg' },
-    { name: 'Ramen', url: process.env.PUBLIC_URL + '/ramen.jpg' },
-    { name: 'Sandwich', url: process.env.PUBLIC_URL + '/sandwich.jpg' },
-    { name: 'Tteokbokki', url: process.env.PUBLIC_URL + '/tteokbokki.jpg' },
+    { name: '햄버거사랑단', url: process.env.PUBLIC_URL + '/hamburger.jpg' },
+    { name: '밥친구구함', url: process.env.PUBLIC_URL + '/pizza.jpg' },
+    { name: '호로록', url: process.env.PUBLIC_URL + '/ramen.jpg' },
+    { name: '샌디치냠', url: process.env.PUBLIC_URL + '/sandwich.jpg' },
+    { name: '엽떡먹장', url: process.env.PUBLIC_URL + '/tteokbokki.jpg' },
 ];
 
 function Swipe() {
     const [characters, setCharacters] = useState(db);
 
-    const swiped = (direction, nameToDelete) => {
+    const swiped = async (direction, nameToDelete) => {
         console.log('Removing: ' + nameToDelete);
-        setCharacters((prev) => prev.filter((character) => character.name !== nameToDelete));
-        // 오른쪽으로 스와이프 했을 때만 불꽃놀이 실행
+
+        // 오른쪽으로 스와이프 했을 때 채팅룸 생성
         if (direction === 'right') {
-            confetti({
-                particleCount: 200,
-                spread: 100,
-                origin: { x: 0.5, y: 0.6 }, // 화면 중앙에서 터짐
-                colors: ['#ff4e50', '#ff944e', '#fffdb0'], // 밝은 색상
-            });
+            try {
+                const storedUser = JSON.parse(sessionStorage.getItem('user'));
+                if (!storedUser || !storedUser.id) {
+                    alert('로그인이 필요합니다.');
+                    return;
+                }
+
+                const userId = storedUser.id;
+
+                // 채팅룸 생성 API 호출
+                const newRoom = {
+                    name: `${nameToDelete}과의 채팅방`,
+                    limitednum: 2,
+                    state: '모집 중',
+                };
+
+                const response = await axios.post('/chatrooms', newRoom);
+                const createdRoom = response.data;
+
+                // 생성된 채팅룸에 참가
+                await axios.post(`/chatparts?userid=${userId}&roomid=${createdRoom.id}`);
+
+                // 성공적으로 생성된 경우 알림 및 효과
+                confetti({
+                    particleCount: 200,
+                    spread: 100,
+                    origin: { x: 0.5, y: 0.6 }, // 화면 중앙에서 터짐
+                    colors: ['#ff4e50', '#ff944e', '#fffdb0'], // 밝은 색상
+                });
+                alert(`채팅방 '${createdRoom.name}'이 생성되었습니다.`);
+            } catch (error) {
+                console.error('채팅룸 생성 중 오류 발생:', error);
+                alert('채팅룸 생성에 실패했습니다.');
+            }
         }
+
+        // 스와이프한 캐릭터 제거
+        setCharacters((prev) => prev.filter((character) => character.name !== nameToDelete));
     };
 
     const outOfFrame = (name) => {
@@ -35,7 +68,6 @@ function Swipe() {
     };
 
     return (
-        
         <div className="swipe-container">
             <Header />
             {/* Title 문구 */}
@@ -60,7 +92,7 @@ function Swipe() {
                 ))}
             </div>
 
-          {/* Footer */}
+            {/* Footer */}
             <Footer />
         </div>
     );
