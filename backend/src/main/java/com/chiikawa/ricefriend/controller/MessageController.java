@@ -30,7 +30,7 @@ public class MessageController {
     private SimpMessagingTemplate messagingTemplate;
 
     @MessageMapping("/addUser")
-    public ResponseEntity<String> addUser(@Payload MessageDto.MessageResponseDto messageDto, SimpMessageHeaderAccessor headerAccessor){
+    public ResponseEntity<String> addUser(@Payload MessageDto.MessageSaveDto messageDto, SimpMessageHeaderAccessor headerAccessor){
         System.out.println("=================== JOIN ===================");
 
         User user = messageDto.getUser();
@@ -38,6 +38,23 @@ public class MessageController {
 
         headerAccessor.getSessionAttributes().put("user", user);
         headerAccessor.getSessionAttributes().put("chatroom", chatroom);
+
+        // 메시지 저장
+        messageService.saveMessage(messageDto);
+
+        // 메시지를 해당 채팅방 구독자들에게 전송
+        messagingTemplate.convertAndSend("/sub/chatroom/" + chatroom.getId(), messageDto);
+        return ResponseEntity.ok("메시지 전송 완료");
+    }
+
+    @MessageMapping("/leaveUser")
+    public ResponseEntity<String> leaveUser(@Payload MessageDto.MessageSaveDto messageDto, SimpMessageHeaderAccessor headerAccessor){
+        System.out.println("=================== JOIN ===================");
+
+        ChatRoom chatroom = messageDto.getChatroom();
+
+        // 메시지 저장
+        messageService.saveMessage(messageDto);
 
         // 메시지를 해당 채팅방 구독자들에게 전송
         messagingTemplate.convertAndSend("/sub/chatroom/" + chatroom.getId(), messageDto);
@@ -50,7 +67,7 @@ public class MessageController {
         System.out.println("=================== SENT ===================");
 
         // 메시지 저장
-        //Message chatMessage = messageService.saveMessage(messageDto);
+        messageService.saveMessage(messageDto);
 
         // 메시지를 해당 채팅방 구독자들에게 전송
         messagingTemplate.convertAndSend("/sub/chatroom/" + messageDto.getChatroom().getId(), messageDto);

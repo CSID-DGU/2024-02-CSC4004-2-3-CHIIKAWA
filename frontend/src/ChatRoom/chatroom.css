@@ -112,6 +112,10 @@ header {
   background-color: #fff4e6;
 }
 
+.input-camera {
+  display: none;
+}
+
 .sidebar-header {
   padding: 10px;
   background-color: #f2f2f2;

@@ -60,6 +60,14 @@ public class UserController {
         return ResponseEntity.ok(userList);
     }
 
+    // 채팅방 id로 방멤버 조회
+    @GetMapping("/chatroom/{roomid}")
+    public ResponseEntity<List<UserDto.UserResponseDto>> getUserListByRoomId(@PathVariable int roomid) {
+        List<UserDto.UserResponseDto> responseDto = userService.getAllUsersByRoomId(roomid);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
     // 유저 삭제
     @DeleteMapping("/delete/{id}")
     public void deleteUserById(@PathVariable int id) {

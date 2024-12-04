@@ -1,7 +1,8 @@
 import React from "react";
-import "./chatmessage.css";
 
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
+
+import "./chatmessage.css";
 
 const MessageType = {
     CHAT: "CHAT",

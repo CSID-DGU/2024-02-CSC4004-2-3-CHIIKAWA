@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 
 import axios from 'axios';
 import { Stomp, CompatClient } from '@stomp/stompjs';
+import { useLocation } from 'react-router-dom'
 
 import IconButton from "@mui/material/IconButton";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
@@ -27,48 +28,81 @@ const MessageType = {
 
 const ChatRoom = () => {
   const [message, setMessage] = useState(""); // 메세지 입력창
-  const [messages, setMessages] = useState([  // 화면에 표시되는 메세지들
-    { user: { id: 2, name: "name1" }, chatroom: { id: 1 }, type: MessageType.CHAT, detail: "Hi!", senttime: Date.now() },
-    { user: { id: 3, name: "name2" }, chatroom: { id: 1 }, type: MessageType.CHAT, detail: "Hello.", senttime: Date.now() },
-  ]);
+  const [messages, setMessages] = useState([]); // 메세지 박스
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
   const [isLeftSidebarOpen, setIsLeftSidebarOpen] = useState(false);
 
   const chatBoxRef = useRef(null);
   const stompClient = useRef(null);
 
-  // 유저id, 룸id 불러오기
-  const curUser = JSON.parse(sessionStorage.getItem("user"));
-  // const roomId = sessionStorage.getItem("roomId") || undefined;
-  const chatRooms = JSON.parse(sessionStorage.getItem("chatrooms"));
-  const [curRoom, setChatRoom] = useState(chatRooms[0] || undefined);
-  // id로 가져와?
+  // 현재 유저, 룸 불러오기
+  const curUser = JSON.parse(sessionStorage.getItem('user')); // 초기값을 null로 설정
+  const [curRoom, setChatRoom] = useState();
 
-  console.log(curUser);
+  // navigate를 통해 입장했을 때
+  const location = useLocation();
+  const [navigatedRoom, setNavigatedRoom] = useState(location?.state?.room);
 
-  const init = async () => {
-    if(curRoom != undefined) {
-      await checkMessageHistory();
+  // 채팅방 데이터
+  const [roomList, setChatRoomList] = useState([]);
+
+  // 상단 채팅방 이름
+  const [roomName, setRoomName] = useState("");
+
+  // 멤버 데이터
+  const [memberList, setMemberList] = useState([]);
+
+  useEffect(() => {
+    getChatroomsByUserId();
+  }, []);
+
+  useEffect(() => {
+    refresh();
+    // 컴포넌트 언마운트 시 웹소켓 연결 해제
+    return () => disconnect();
+  }, [curRoom]);
+
+  const refresh = async () => {
+    console.log(curRoom);
+    if (curUser && curRoom) {
+      await getMembersByRoomId();
+      setRoomName(curRoom.name);
+      await getMessageHistory();
       connect();
     }
   }
 
-  useEffect(() => {
-    init();
-    // 컴포넌트 언마운트 시 웹소켓 연결 해제
-    return () => disconnect();
-  }, []);
+  const getChatroomsByUserId = async () => {
+    const rooms = await axios.get(`/chatrooms/chatroom/${curUser.id}`);
+
+    const chkExistFlag = "enterflag" in sessionStorage;
+    if (navigatedRoom && chkExistFlag) {
+      setChatRoom(navigatedRoom);
+    } else {
+      setChatRoom(rooms.data[0] || undefined);
+    }
+
+    rooms.data.forEach(room => {
+      room["icon"] = <GroupsIcon sx={{ fontSize: 30, color: "#666" }} />;
+    });
+
+    setChatRoomList(rooms.data);
+  };
+
+  const getMembersByRoomId = async () => {
+    const members = await axios.get(`/users/chatroom/${curRoom.id}`);
+    members.data.forEach(member => {
+      member["avatar"] = <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} />;
+    });
+    setMemberList(members.data);
+  };
 
   // 채팅 내역 조회하고 불러오기
-  const checkMessageHistory = async () => {
+  const getMessageHistory = async () => {
     try {
-      await axios.get("/messages/" + curRoom.id)
+      await axios.get(`/messages/${curRoom.id}`)
         .then(response => {
-          response.data.forEach(msg => {
-            setMessages((prevMessages) => [...prevMessages, msg])
-          });
-          // 나중에 이걸로 변경
-          //setMessages(response.data);
+          setMessages(response.data);
         });
     } catch (error) {
       console.error('채팅 내역 불러오기 에러:', error);
@@ -92,23 +126,40 @@ const ChatRoom = () => {
     // Subscribe to the Public Topic
     stompClient.current.subscribe(`/sub/chatroom/${curRoom.id}`, (msg) => {
       const newMessage = JSON.parse(msg.body);
-      if (newMessage.type == MessageType.LEAVE) {
-        newMessage.detail = `${newMessage.user.name}님이 퇴장하셨습니다.`;
+
+      if (newMessage.type != MessageType.CHAT) {
+        getMembersByRoomId();
       }
+
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
-    const joinMessage = {
+    const enterflag = sessionStorage.getItem('enterflag');
+    if (enterflag == "JOIN") {
+      const joinMessage = {
+        user: curUser,
+        chatroom: curRoom,
+        type: MessageType.JOIN,
+        detail: curUser.name + "님이 입장하셨습니다."
+      };
+
+      // Tell your message to the server
+      stompClient.current.send(`/pub/addUser`, {}, JSON.stringify(joinMessage));
+      setNavigatedRoom(null);
+      sessionStorage.removeItem('enterflag');
+    }
+  }
+
+  const onDisconnected = () => {
+    const leaveMessage = {
       user: curUser,
       chatroom: curRoom,
-      type: MessageType.JOIN,
-      detail: curUser.name + "님이 입장하셨습니다."
+      type: MessageType.LEAVE,
+      detail: curUser.name + "님이 퇴장하셨습니다."
     };
 
-    // Tell your username to the server
-    stompClient.current.send(`/pub/addUser`, {}, JSON.stringify(joinMessage));
-
-    //setMessages((prevMessages) => [...prevMessages, joinMessage]);
+    // Tell your message to the server
+    stompClient.current.send(`/pub/leaveUser`, {}, JSON.stringify(leaveMessage));
   }
 
   function onError(error) {
@@ -151,23 +202,6 @@ const ChatRoom = () => {
     }
   }, [messages]);
 
-  // 임시 그룹 데이터
-  const groupList = [
-    { id: 1, name: "group1", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
-    { id: 2, name: "group2", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
-    { id: 3, name: "group3", icon: <GroupsIcon sx={{ fontSize: 30, color: "#666" }} /> },
-  ];
-
-  // 임시 멤버 데이터
-  const memberList = [
-    { id: 1, name: "name1", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
-    { id: 2, name: "name2", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
-    { id: 3, name: "name3", avatar: <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} /> },
-  ];
-
-  // 상단 채팅방 이름
-  const [roomName, setRoomName] = useState(curRoom?.name || "");
-
   return (
     <>
       {/* 공통 헤더 */}
@@ -175,7 +209,7 @@ const ChatRoom = () => {
 
       <div className="chat-room-container">
         {/* 기존의 ChatRoom 전용 헤더 */}
-        <header>
+        <header className="chat-header">
           <IconButton color="primary" className="icon-button" onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)} sx={{ color: "#4caf50" }}>
             <ChatIcon />
           </IconButton>
@@ -190,11 +224,17 @@ const ChatRoom = () => {
             <div className="sidebar-title">채팅방 목록</div>
           </div>
           <div className="group-list">
-            {groupList.map((group) => (
-              <ChatGroup group={group} onClick={(e) => {
-                console.log(e.target.value);
-                setChatRoom(e.target.value);
-              }} />
+            {roomList.map((room) => (
+              <ChatGroup
+                user={curUser}
+                group={room}
+                isCurRoom={room.id === curRoom.id}
+                onClick={(e) => {
+                  if (curRoom.id != room.id) {
+                    setChatRoom(room);
+                  }
+                }}
+                onDisconnected={onDisconnected} />
             ))}
           </div>
         </div>
@@ -220,6 +260,12 @@ const ChatRoom = () => {
           <div className="message-input-container">
             <IconButton color="primary" component="label" className="icon-button">
               <PhotoCamera sx={{ color: "#4caf50" }} />
+              {/* <input
+                type="file"
+                className="input-camera"
+                accept="image/jpg, image/jpeg, image/png"
+                multiple
+              /> */}
             </IconButton>
             <input
               type="text"

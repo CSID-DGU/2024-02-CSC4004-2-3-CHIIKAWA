@@ -57,6 +57,15 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
+    // 채팅방 id로 멤버 조회
+    public List<UserDto.UserResponseDto> getAllUsersByRoomId(int roomid) {
+        List<User> users = userRepository.findAllByRoomid(roomid);
+
+        return users.stream()
+                .map(UserDto.UserResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
     public UserDto.UserResponseDto getUserById(int id) {
         User entity = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 유저가 없습니다. id=" + id));

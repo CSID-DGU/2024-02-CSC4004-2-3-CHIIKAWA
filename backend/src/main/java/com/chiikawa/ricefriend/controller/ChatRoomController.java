@@ -43,7 +43,7 @@ public class ChatRoomController {
     }
 
     // 유저 아이디를 활용한 채팅방 전체 조회
-    @GetMapping("/login/{userid}")
+    @GetMapping("/chatroom/{userid}")
     public ResponseEntity<List<ChatRoomDto.ChatRoomResponseDto>> getChatRoomByUserId(@PathVariable int userid) {
         List<ChatRoomDto.ChatRoomResponseDto> roomList = chatroomService.getAllChatRoomsByUserId(userid);
 
