@@ -42,9 +42,9 @@ const OpenChat = () => {
         })).filter((data) => data.state == "모집 중");
         console.log(mappedData)
         setChatRooms(mappedData);
-        setIsLoading(false);
 
         await fetchParticipants(response.data.map((room) => room.id));
+        setIsLoading(false);
       } catch (error) {
         console.error("채팅방 데이터를 불러오는 중 오류가 발생했습니다.", error);
         setChatRooms([]);
@@ -65,14 +65,9 @@ const OpenChat = () => {
       response.data.forEach((entry) => {
         const roomId = entry.chatroom.id;
 
-        console.log(userId);
-        console.log(entry.user.id);
-        
         if(storedUser.id == entry.user.id) {
           containsMe[roomId] = true;
         }
-        console.log(roomId);
-        console.log(containsMe[roomId]);
 
         if (!participantCounts[roomId]) {
           participantCounts[roomId] = 0;

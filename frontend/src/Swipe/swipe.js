@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import TinderCard from 'react-tinder-card';
@@ -20,15 +20,34 @@ const db = [
 function Swipe() {
     const navigate = useNavigate();
 
-    const [characters, setCharacters] = useState(db);
+    const [characters, setCharacters] = useState([]);
+    const storedUser = JSON.parse(sessionStorage.getItem('user'));
 
-    const swiped = async (direction, nameToDelete) => {
-        console.log('Removing: ' + nameToDelete);
+    useEffect(() => {
+        getUsers();
+    }, []);
+
+    const getUsers = async () => {
+        const users = await axios.get(`/users`);
+        const filteredUsers = users.data.filter((user) => user != storedUser.id);
+
+        filteredUsers[0]["url"] = process.env.PUBLIC_URL + '/hamburger.jpg';
+        filteredUsers[1]["url"] = process.env.PUBLIC_URL + '/pizza.jpg';
+        filteredUsers[2]["url"] = process.env.PUBLIC_URL + '/ramen.jpg';
+        filteredUsers[3]["url"] = process.env.PUBLIC_URL + '/sandwich.jpg';
+        filteredUsers[4]["url"] = process.env.PUBLIC_URL + '/tteokbokki.jpg';
+        filteredUsers[5]["url"] = process.env.PUBLIC_URL + '/hamburger.jpg';
+        filteredUsers[6]["url"] = process.env.PUBLIC_URL + '/pizza.jpg';
+
+        setCharacters(filteredUsers);
+    };
+
+    const swiped = async (direction, character) => {
+        console.log('Removing: ' + character.name);
 
         // 오른쪽으로 스와이프 했을 때 채팅룸 생성
         if (direction === 'right') {
             try {
-                const storedUser = JSON.parse(sessionStorage.getItem('user'));
                 if (!storedUser || !storedUser.id) {
                     alert('로그인이 필요합니다.');
                     return;
@@ -38,7 +57,8 @@ function Swipe() {
 
                 // 채팅룸 생성 API 호출
                 const newRoom = {
-                    name: `${nameToDelete}과의 채팅방`,
+                    name: `${character.name}과의 채팅방`,
+                    state: "",
                     limitednum: 2,
                 };
 
@@ -49,6 +69,7 @@ function Swipe() {
 
                 // 생성된 채팅룸에 참가
                 await axios.post(`/chatparts?userid=${userId}&roomid=${createdRoom.id}`);
+                await axios.post(`/chatparts?userid=${character.id}&roomid=${createdRoom.id}`);
 
                 // 성공적으로 생성된 경우 알림 및 효과
                 confetti({
@@ -68,11 +89,11 @@ function Swipe() {
         }
 
         // 스와이프한 캐릭터 제거
-        setCharacters((prev) => prev.filter((character) => character.name !== nameToDelete));
+        setCharacters((prev) => prev.filter((prevCharacter) => prevCharacter.id !== character.id));
     };
 
-    const outOfFrame = (name) => {
-        console.log(name + ' left the screen!');
+    const outOfFrame = (character) => {
+        console.log(character.name + ' left the screen!');
     };
 
     return (
@@ -87,8 +108,8 @@ function Swipe() {
                     <TinderCard
                         className="swipe"
                         key={character.name}
-                        onSwipe={(dir) => swiped(dir, character.name)}
-                        onCardLeftScreen={() => outOfFrame(character.name)}
+                        onSwipe={(dir) => swiped(dir, character)}
+                        onCardLeftScreen={() => outOfFrame(character)}
                     >
                         <div
                             style={{ backgroundImage: `url(${character.url})` }}

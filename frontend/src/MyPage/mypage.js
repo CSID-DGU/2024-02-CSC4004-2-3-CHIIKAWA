@@ -134,8 +134,8 @@ const MyPage = () => {
             }
 
             user.food1 = foodPreferences[0] ? { id: foodPreferences[0].id } : null;
-            user.food2 = foodPreferences[0] ? { id: foodPreferences[0].id } : null;
-            user.food3 = foodPreferences[0] ? { id: foodPreferences[0].id } : null;
+            user.food2 = foodPreferences[1] ? { id: foodPreferences[1].id } : null;
+            user.food3 = foodPreferences[2] ? { id: foodPreferences[2].id } : null;
             console.log('업데이트 요청 데이터:', user);
 
             // API 호출
