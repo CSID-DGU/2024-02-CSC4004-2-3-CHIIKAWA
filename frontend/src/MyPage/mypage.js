@@ -16,15 +16,16 @@ const MyPage = () => {
     const [foodData, setFoodData] = useState({});
     const [isEditingName, setIsEditingName] = useState(false);
 
+    const user = JSON.parse(sessionStorage.getItem('user'));
+
     // 서버에서 사용자 정보와 음식 데이터 가져오기
     useEffect(() => {
         const fetchUserData = async () => {
             try {
                 // sessionStorage에서 토큰 및 사용자 ID 가져오기
                 const token = sessionStorage.getItem('accessToken');
-                const userId = JSON.parse(sessionStorage.getItem('user'))?.id; // 로그인 시 저장된 사용자 ID
     
-                if (!token || !userId) {
+                if (!token || !user) {
                     alert('로그인이 필요합니다.');
                     navigate('/login'); // 로그인 페이지로 리다이렉트
                     return;
@@ -37,7 +38,7 @@ const MyPage = () => {
                 };
     
                 // 사용자 정보 가져오기
-                const userResponse = await axios.get(`/users/${userId}`, config);
+                const userResponse = await axios.get(`/users/${user.id}`, config);
     
                 console.log('사용자 정보:', userResponse.data);
                 setName(userResponse.data.name);
@@ -94,11 +95,33 @@ const MyPage = () => {
         fetchFoodData();
     }, [navigate]);
 
+    // 사용자 업데이트 API 요청
+    const updateUser = async (user) => {
+        try {
+            // sessionStorage에서 토큰 가져오기
+            const token = sessionStorage.getItem('accessToken');
+            if (!token) {
+                throw new Error('로그인이 필요합니다.');
+            }
+    
+            // 업데이트 API 호출
+            const response = await axios.patch(`/users/${user.id}`, user);
+    
+            console.log('사용자 업데이트 성공:', response.data);
+            alert('사용자 정보가 성공적으로 업데이트되었습니다.');
+            return response.data;
+        } catch (error) {
+            console.error('사용자 업데이트 실패:', error.response?.data || error.message);
+            alert('사용자 정보를 업데이트하는 중 오류가 발생했습니다.');
+            throw error;
+        }
+    };
+
     // 선호 음식 저장
     const saveFoodPreferences = async () => {
         try {
-            const userId = JSON.parse(sessionStorage.getItem('user'))?.id; // 사용자 ID 가져오기
-            if (!userId) {
+            const user = JSON.parse(sessionStorage.getItem('user')); // 사용자 ID 가져오기
+            if (!user) {
                 alert('로그인이 필요합니다.');
                 navigate('/login'); // 로그인 페이지로 리다이렉트
                 return;
@@ -110,11 +133,18 @@ const MyPage = () => {
                     Authorization: `Bearer ${token}`, // 인증 헤더 추가
                 },
             };
+        
+            // 요청 데이터 생성
+            const requestData = {
+                food1: foodPreferences[0] ? { id: foodPreferences[0].id } : null,
+                food2: foodPreferences[1] ? { id: foodPreferences[1].id } : null,
+                food3: foodPreferences[2] ? { id: foodPreferences[2].id } : null,
+            };
     
-            // 선호 음식 저장 API 호출
-            await axios.patch(`/users/${userId}`, {
-                foodPreferences: foodPreferences.map((food) => food.id), // 음식 ID 배열로 전송
-            }, config);
+            console.log('업데이트 요청 데이터:', requestData);
+
+            // API 호출
+            await updateUser(user);
     
             setIsPopupOpen(false);
             alert('선호 음식이 저장되었습니다.');
@@ -127,9 +157,20 @@ const MyPage = () => {
     // 이름 저장
     const saveName = async () => {
         try {
-            await axios.put('/api/user/profile', { name });
-            setIsEditingName(false); // 수정 모드 비활성화
-            alert('닉네임이 저장되었습니다.');
+            const user = JSON.parse(sessionStorage.getItem('user')); // 사용자 ID 가져오기
+            if (!user) {
+                alert('로그인이 필요합니다.');
+                navigate('/login'); // 로그인 페이지로 리다이렉트
+                return;
+            }
+            
+            user.name = name;
+            console.log('업데이트 요청 데이터:', user);
+    
+            // API 호출
+            await updateUser(user);
+    
+            setIsEditingName(false);
         } catch (error) {
             console.error('닉네임 저장 실패:', error);
             alert('닉네임 저장 중 오류가 발생했습니다.');
