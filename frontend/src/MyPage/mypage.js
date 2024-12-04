@@ -15,6 +15,7 @@ const MyPage = () => {
     const [name, setName] = useState('');
     const [foodPreferences, setFoodPreferences] = useState([]);
     const [profileScore, setProfileScore] = useState(4.5);
+    const [profileImage, setProfileImage] = useState('https://via.placeholder.com/150'); // 기본 프로필 이미지
     const [isNamePopupOpen, setIsNamePopupOpen] = useState(false);
     const [isFoodPopupOpen, setIsFoodPopupOpen] = useState(false);
     const [foodData, setFoodData] = useState({});
@@ -47,6 +48,8 @@ const MyPage = () => {
                 console.log('사용자 정보:', userResponse.data);
                 setName(userResponse.data.name);
                 setProfileScore(userResponse.data.profileScore || 4.5); // 기본값 설정
+                // 프로필 이미지 설정
+                setProfileImage(userResponse.data.profileImage || 'https://via.placeholder.com/150');
 
                 // 선호 음식 데이터 설정
                 const favoriteFoods = [];
@@ -189,7 +192,7 @@ const MyPage = () => {
             <h2 className='mypage-title'>마이페이지</h2>
             <p className='mypage-introduce'>안녕하세요, {name}님!</p>
             <img
-                src="https://via.placeholder.com/150"
+                src={profileImage} // 프로필 이미지를 표시
                 alt="Profile"
                 className="profile-picture"
             />

@@ -26,11 +26,14 @@ function Register() {
     };
 
     const handleProfileImageChange = async (e) => {
+        console.log("파일 이벤트:", e.target.files); // 파일 리스트 확인
         const file = e.target.files[0];
 
         if (!file) {
+            alert("파일을 선택해주세요.");
             return;
         }
+        console.log("선택한 파일:", file); // 파일 정보 출력
 
         // 업로드 시도 횟수 증가
         setUploadAttempts((prev) => prev + 1);
@@ -43,13 +46,12 @@ function Register() {
             // 두 번째 시도에서 정상적으로 업로드
             const reader = new FileReader();
             reader.onload = () => {
-                // Base64 데이터 추출
-                const base64Data = reader.result.split(',')[1];
-                setProfileImage(base64Data);
-                alert("사진 업로드 성공!");
+                console.log("Base64 변환 성공:", reader.result); // Base64 데이터 확인
+                setProfileImage(reader.result); // Base64 데이터를 상태에 저장
             };
-            reader.onerror = () => {
-                alert("사진 업로드 중 오류가 발생했습니다.");
+            reader.onerror = (error) => {
+                console.error("Base64 변환 실패:", error);
+                alert("이미지 변환 중 오류가 발생했습니다.");
             };
             reader.readAsDataURL(file); // 파일을 Base64로 읽기
         }
@@ -74,7 +76,7 @@ function Register() {
             email,
             password,
             state: '활동 중',
-            profileImage, // Base64로 인코딩된 이미지
+            profileimg: profileImage, // Base64로 인코딩된 이미지
             food1: foodPreferences[0] ? { id: foodPreferences[0].id } : null,
             food2: foodPreferences[1] ? { id: foodPreferences[1].id } : null,
             food3: foodPreferences[2] ? { id: foodPreferences[2].id } : null,
@@ -180,3 +182,4 @@ function Register() {
 }
 
 export default Register;
+
