@@ -63,17 +63,14 @@ body {
 
 .preference-badge {
     display: inline-block;
-    background-color: #FF8C42;
-    color: white;
+    background-color: #F4E1D2;
+    color: #333;
     padding: 0.3rem 0.6rem;
     border-radius: 15px;
     font-size: 0.9rem;
     margin: 0.3rem;
     text-align: center;
-}
-
-.preference-badge:hover {
-    background-color: #E67E3A;
+    margin-bottom: 10px;
 }
 
 .edit-button {
