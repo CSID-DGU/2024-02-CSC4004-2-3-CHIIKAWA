@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import TinderCard from 'react-tinder-card';
 import axios from 'axios';
 import confetti from 'canvas-confetti';
@@ -16,6 +18,8 @@ const db = [
 ];
 
 function Swipe() {
+    const navigate = useNavigate();
+
     const [characters, setCharacters] = useState(db);
 
     const swiped = async (direction, nameToDelete) => {
@@ -36,11 +40,12 @@ function Swipe() {
                 const newRoom = {
                     name: `${nameToDelete}과의 채팅방`,
                     limitednum: 2,
-                    state: '모집 중',
                 };
 
                 const response = await axios.post('/chatrooms', newRoom);
                 const createdRoom = response.data;
+
+                console.log(response);
 
                 // 생성된 채팅룸에 참가
                 await axios.post(`/chatparts?userid=${userId}&roomid=${createdRoom.id}`);
@@ -53,6 +58,9 @@ function Swipe() {
                     colors: ['#ff4e50', '#ff944e', '#fffdb0'], // 밝은 색상
                 });
                 alert(`채팅방 '${createdRoom.name}'이 생성되었습니다.`);
+
+                sessionStorage.setItem('enterflag', "JOIN");
+                navigate(`/chatroom`, { state: { room: createdRoom } });
             } catch (error) {
                 console.error('채팅룸 생성 중 오류 발생:', error);
                 alert('채팅룸 생성에 실패했습니다.');

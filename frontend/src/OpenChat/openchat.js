@@ -38,7 +38,8 @@ const OpenChat = () => {
           state: room.state,
           members: room.limitednum,
           currentParticipants: 0,
-        }));
+        })).filter((data) => data.state == "모집 중");
+        console.log(mappedData)
         setChatRooms(mappedData);
         setIsLoading(false);
 
@@ -120,8 +121,10 @@ const OpenChat = () => {
       setIsCreateModalOpen(false);
 
       // 참가 후 자동으로 해당 방으로 이동
-      setSelectedRoom({ id: createdRoom.id, title: createdRoom.name });
-      setIsJoinModalOpen(true);
+      //setSelectedRoom({ id: createdRoom.id, title: createdRoom.name });
+
+      sessionStorage.setItem('enterflag', "JOIN");
+      navigate(`/chatroom`, { state: { room: createdRoom } });
     } catch (error) {
       console.error("방 생성 중 오류가 발생했습니다.", error);
     }
@@ -143,7 +146,7 @@ const OpenChat = () => {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button onClick={() => setIsCreateModalOpen(true)}>방 만들기</button>
+            <button className="creatroom-button" onClick={() => setIsCreateModalOpen(true)}>방 만들기</button>
           </div>
           <div className="chat-list">
             {isLoading ? (

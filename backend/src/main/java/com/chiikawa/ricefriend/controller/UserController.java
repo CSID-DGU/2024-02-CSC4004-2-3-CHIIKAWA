@@ -10,7 +10,6 @@ import com.chiikawa.ricefriend.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -36,12 +35,8 @@ public class UserController {
     }
 
     // 유저 등록
-    @PostMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<UserDto.UserSaveDto> saveUser(@RequestPart("data") UserDto.UserSaveDto requestDto,
-                                                        @RequestPart("profileimg") MultipartFile profileImage) {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>asdasdasd>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
-        System.out.println(requestDto);
-
+    @PostMapping
+    public ResponseEntity<UserDto.UserSaveDto> saveUser(@RequestBody UserDto.UserSaveDto requestDto) {
         userService.saveUser(requestDto);
 
         //return ResponseEntity.status(HttpStatus.CREATED).build();

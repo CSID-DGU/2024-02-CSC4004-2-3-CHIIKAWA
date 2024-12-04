@@ -20,7 +20,7 @@ const ChatGroup = ({ user, group, isCurRoom, onClick, onDisconnected }) => {
         <div className={`${isCurRoom ? "current-group-item" : "group-item"}`} key={group.id} onClick={onClick}>
             <div className="group-icon">{group.icon}</div>
             <div className="group-name">{group.name}</div>
-            <button className="close-button" onClick={() => setIsPopupOpen(true)}>
+            <button className="group-close-button" onClick={() => setIsPopupOpen(true)}>
                 ×
             </button>
             {isPopupOpen && (

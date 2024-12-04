@@ -258,15 +258,6 @@ const ChatRoom = () => {
           </div>
 
           <div className="message-input-container">
-            <IconButton color="primary" component="label" className="icon-button">
-              <PhotoCamera sx={{ color: "#4caf50" }} />
-              {/* <input
-                type="file"
-                className="input-camera"
-                accept="image/jpg, image/jpeg, image/png"
-                multiple
-              /> */}
-            </IconButton>
             <input
               type="text"
               className="input"

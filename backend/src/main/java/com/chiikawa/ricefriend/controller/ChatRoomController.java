@@ -3,6 +3,7 @@ package com.chiikawa.ricefriend.controller;
 import java.util.List;
 
 import com.chiikawa.ricefriend.data.dto.ChatRoomDto;
+import com.chiikawa.ricefriend.data.entity.ChatRoom;
 import com.chiikawa.ricefriend.service.ChatRoomService;
 
 import lombok.RequiredArgsConstructor;
@@ -19,11 +20,12 @@ public class ChatRoomController {
 
     // 채팅방 등록
     @PostMapping
-    public ResponseEntity<ChatRoomDto.ChatRoomSaveDto> saveChatRoom(@RequestBody ChatRoomDto.ChatRoomSaveDto requestDto) {
-        chatroomService.saveChatRoom(requestDto);
+    public ResponseEntity<ChatRoom> saveChatRoom(@RequestBody ChatRoomDto.ChatRoomSaveDto requestDto) {
+        ChatRoom chatroom = chatroomService.saveChatRoom(requestDto);
 
         //return ResponseEntity.status(HttpStatus.CREATED).build();
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        System.out.println(HttpStatus.CREATED);
+        return new ResponseEntity<>(chatroom, HttpStatus.CREATED);
     }
 
     // 채팅방 수정

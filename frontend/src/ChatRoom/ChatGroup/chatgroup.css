@@ -44,7 +44,7 @@
     flex-grow: 1; /* 이름이 여유 공간을 채우도록 */
 }
 
-.close-button {
+.group-close-button {
     position: absolute; /* 오른쪽 상단 배치를 위해 */
     top: -5px;
     right: -5px;
@@ -55,7 +55,7 @@
     cursor: pointer;
 }
 
-.close-button:hover {
+.group-close-button:hover {
     color: #000;
     transform: scale(1.05);
 }
@@ -107,7 +107,7 @@
     background-color: #E67E3A;
 }
 
-/* 예 버튼 */
+/* 아니오 버튼 */
 .no-button {
     width: 150px;
     margin-top: 20px;
