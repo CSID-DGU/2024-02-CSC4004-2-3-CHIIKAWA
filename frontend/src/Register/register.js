@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './register.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -10,7 +10,7 @@ function Register() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [name, setName] = useState('');
     const [foodPreferences, setFoodPreferences] = useState([]);
-    const [profileImage, setProfileImage] = useState(null);
+    const [profileImage, setProfileImage] = useState(null); // Base64로 인코딩된 이미지
     const [uploadAttempts, setUploadAttempts] = useState(0); // 업로드 시도 횟수 상태 추가
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const navigate = useNavigate();
@@ -25,24 +25,30 @@ function Register() {
         }
     };
 
-    const handleProfileImageChange = (e) => {
+    const handleProfileImageChange = async (e) => {
         const file = e.target.files[0];
 
         if (!file) {
+            alert("파일을 선택해주세요.");
             return;
         }
 
-        // 업로드 시도 횟수 증가
         setUploadAttempts((prev) => prev + 1);
 
         if (uploadAttempts === 0) {
-            // 첫 번째 시도에서 "사람 얼굴 감지" 시뮬레이션
             alert("사람 얼굴이 감지되어 업로드할 수 없는 사진입니다.");
-            setProfileImage(null); // 사진 초기화
+            setProfileImage(null);
         } else {
-            // 두 번째 시도에서 정상적으로 업로드
-            setProfileImage(file);
-            alert("사진 업로드 성공!");
+            const reader = new FileReader();
+            reader.onload = () => {
+                console.log("Base64 변환 성공:", reader.result);
+                setProfileImage(reader.result); // Base64 데이터를 상태에 저장
+            };
+            reader.onerror = (error) => {
+                console.error("Base64 변환 실패:", error);
+                alert("이미지 변환 중 오류가 발생했습니다.");
+            };
+            reader.readAsDataURL(file); // 파일을 Base64로 읽기
         }
     };
 
@@ -59,32 +65,39 @@ function Register() {
             return;
         }
 
-        const requestBody = {
-            name,
-            email,
-            password,
-            state: '활동 중',
-            food1: foodPreferences[0] ? { id: foodPreferences[0].id } : null,
-            food2: foodPreferences[1] ? { id: foodPreferences[1].id } : null,
-            food3: foodPreferences[2] ? { id: foodPreferences[2].id } : null,
-        };
-
-        const formData = new FormData();
-        formData.append('data', JSON.stringify(requestBody));
-
-
-        if (profileImage) {
-            formData.append('profileimg', profileImage);
-        } else {
-            formData.append('profileimg', null); // 프로필 이미지가 없을 경우 처리
+        if (!profileImage) {
+            alert("프로필 이미지를 업로드해주세요.");
+            return;
         }
 
         try {
-            const response =  await axios.post('/users', formData, {
+            // Base64 → Blob 변환
+            const mimeType = profileImage.split(',')[0].match(/:(.*?);/)[1];
+            const base64Data = profileImage.split(',')[1];
+            const byteCharacters = atob(base64Data);
+            const byteNumbers = Array.from(byteCharacters, (char) => char.charCodeAt(0));
+            const byteArray = new Uint8Array(byteNumbers);
+            const blob = new Blob([byteArray], { type: mimeType }); // Blob 생성
+
+            // Blob과 메타데이터를 요청 Body에 포함하기 위해 새로운 객체 생성
+            const requestBody = {
+                name,
+                email,
+                password,
+                state: '활동 중',
+                food1: foodPreferences[0] ? { id: foodPreferences[0].id } : null,
+                food2: foodPreferences[1] ? { id: foodPreferences[1].id } : null,
+                food3: foodPreferences[2] ? { id: foodPreferences[2].id } : null,
+                profileimg: blob, // Blob 데이터 포함
+            };
+
+            // 요청 전송 (Blob 포함)
+            const response = await axios.post('/users', requestBody, {
                 headers: {
-                    "Content-Type": "multipart/form-data",
+                    'Content-Type': 'application/json',
                 },
             });
+
             console.log('회원가입 성공:', response.data);
             navigate('/login');
         } catch (error) {
@@ -92,6 +105,7 @@ function Register() {
             alert('회원가입 실패: 서버 오류');
         }
     };
+
 
     return (
         <div className="register-container">
