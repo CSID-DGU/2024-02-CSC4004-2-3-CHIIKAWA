@@ -15,7 +15,8 @@ function Rating() {
     const handleSubmit = () => {
         console.log(`송지은님에게 준 점수: ${rating}점`);
         console.log(`피드백: ${feedback}`);
-        navigate('/swipe'); // /swipe로 이동
+        window.location.replace('/chatroom');
+        //navigate('/swipe'); // /swipe로 이동
     };
 
     return (
