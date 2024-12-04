@@ -246,7 +246,6 @@ const MyPage = () => {
                             </div>
                         ))}
                         <button onClick={saveFoodPreferences} className="confirm-button">저장</button>
-                        <button onClick={() => setIsPopupOpen(false)} className="cancel-button">닫기</button>
                     </div>
                 </div>
             )}
