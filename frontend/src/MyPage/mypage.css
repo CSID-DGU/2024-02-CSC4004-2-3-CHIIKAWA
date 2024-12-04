@@ -5,6 +5,17 @@ body {
     background-color: #FFF4E6;
 }
 
+.name-popup-content {
+    background: #FFFFFF;
+    padding: 18px;
+    padding-top: 10px;
+    border-radius: 10px;
+    width: auto;
+    max-width: 400px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
 .mypage-container {
     text-align: center;
     padding: 2rem;
@@ -91,12 +102,44 @@ body {
 }
 
 .edit-name-input {
+    width: 200px;
     padding: 0.5rem;
     border: 1px solid #ddd;
     border-radius: 5px;
-    margin-right: 0.5rem;
+    margin: 10px;
 }
 
 .edit-button:hover {
     background-color: #E67E3A;
+}
+
+.name-save-button {
+    width: 100px;
+    margin-top: 20px;
+    padding: 12px;
+    background-color: #FF8C42;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.name-save-button:hover {
+    background-color: #E67E3A;
+}
+
+.name-close-button {
+    width: 100px;
+    margin-top: 20px;
+    padding: 12px;
+    margin-left: 15px;
+    background-color: #e3e1e1;
+    color: black;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.name-close-button:hover {
+    background-color: #d4d2d2;
 }
