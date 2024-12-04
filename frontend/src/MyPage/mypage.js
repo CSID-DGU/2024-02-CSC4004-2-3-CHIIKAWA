@@ -16,7 +16,6 @@ const MyPage = () => {
     const [foodData, setFoodData] = useState({});
     const [isEditingName, setIsEditingName] = useState(false);
 
-
     // 서버에서 사용자 정보와 음식 데이터 가져오기
     useEffect(() => {
         const fetchUserData = async () => {
@@ -94,18 +93,6 @@ const MyPage = () => {
     
         fetchFoodData();
     }, [navigate]);
-    
-
-    // 음식 선택 핸들러
-    const handleFoodSelection = (food) => {
-        if (foodPreferences.find((item) => item.id === food.id)) {
-            setFoodPreferences(foodPreferences.filter((item) => item.id !== food.id));
-        } else if (foodPreferences.length < 3) {
-            setFoodPreferences([...foodPreferences, food]);
-        } else {
-            alert('최대 3개의 음식을 선택할 수 있습니다.');
-        }
-    };
 
     // 선호 음식 저장
     const saveFoodPreferences = async () => {
@@ -137,6 +124,7 @@ const MyPage = () => {
         }
     };    
 
+    // 이름 저장
     const saveName = async () => {
         try {
             await axios.put('/api/user/profile', { name });
@@ -147,8 +135,19 @@ const MyPage = () => {
             alert('닉네임 저장 중 오류가 발생했습니다.');
         }
     };
-    
 
+    // 음식 선택 핸들러
+    const handleFoodSelection = (food) => {
+        if (foodPreferences.find((item) => item.id === food.id)) {
+            setFoodPreferences(foodPreferences.filter((item) => item.id !== food.id));
+        } else if (foodPreferences.length < 3) {
+            setFoodPreferences([...foodPreferences, food]);
+        } else {
+            alert('최대 3개의 음식을 선택할 수 있습니다.');
+        }
+    };
+    
+    // 출력
     return (
         <div className="mypage-container">
             <h2 className='mypage-title'>마이페이지</h2>
