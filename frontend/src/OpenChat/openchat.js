@@ -170,43 +170,59 @@ const OpenChat = () => {
           </div>
         </div>
 
-        {isCreateModalOpen && (
+        {isJoinModalOpen && selectedRoom && (
           <div className="modal">
             <div className="modal-content">
-              <h2>새 방 만들기</h2>
-              <input
-                type="text"
-                placeholder="방 이름을 입력하세요"
-                value={newRoom.name}
-                onChange={(e) =>
-                  setNewRoom({ ...newRoom, name: e.target.value })
-                }
-              />
-              <input
-                type="number"
-                placeholder="정원"
-                value={newRoom.limitednum}
-                onChange={(e) =>
-                  setNewRoom({ ...newRoom, limitednum: parseInt(e.target.value) })
-                }
-              />
-              <button onClick={handleCreateRoom}>생성</button>
-              <button onClick={() => setIsCreateModalOpen(false)}>취소</button>
+              <h2 className="modal-title">{selectedRoom.title}</h2>
+              <p>상태: {selectedRoom.state}</p>
+              <p>정원: {selectedRoom.currentParticipants || 0} / {selectedRoom.members}명</p>
+              <div className="button-group">
+                <button className="modal-button join-button" onClick={handleJoinRoom}>참가</button>
+                <button className="modal-button close-button" onClick={() => setIsJoinModalOpen(false)}>닫기</button>
+              </div>
             </div>
           </div>
         )}
 
-        {isJoinModalOpen && selectedRoom && (
+        {isCreateModalOpen && (
           <div className="modal">
             <div className="modal-content">
-              <h2>{selectedRoom.title}</h2>
-              <p>상태: {selectedRoom.state}</p>
-              <p>정원: {selectedRoom.currentParticipants || 0} / {selectedRoom.members}명</p>
-              <button onClick={handleJoinRoom}>참가</button>
-              <button onClick={() => setIsJoinModalOpen(false)}>닫기</button>
+              <h2 className="modal-title">새 방 만들기</h2>
+              <div className="input-group">
+                <label className="input-label">방 이름</label>
+                <input
+                  className="input-field"
+                  type="text"
+                  placeholder="방 이름을 입력하세요"
+                  value={newRoom.name}
+                  onChange={(e) =>
+                    setNewRoom({ ...newRoom, name: e.target.value })
+                  }
+                />
+              </div>
+              <div className="input-group">
+                <label className="input-label">정원</label>
+                <input
+                  className="input-field"
+                  type="number"
+                  placeholder="정원"
+                  value={newRoom.limitednum}
+                  onChange={(e) =>
+                    setNewRoom({ ...newRoom, limitednum: parseInt(e.target.value) })
+                  }
+                />
+              </div>
+              <div className="button-group">
+                <button className="modal-button create-button" onClick={handleCreateRoom}>생성</button>
+                <button className="modal-button cancel-button" onClick={() => setIsCreateModalOpen(false)}>취소</button>
+              </div>
+
             </div>
           </div>
         )}
+
+
+
       </div>
       <Footer />
     </>
