@@ -83,20 +83,24 @@ function Register() {
             return;
         }
 
-        const requestBody = {
-            name,
-            email,
-            password,
-            state: '활동 중',
-            food1: foodPreferences[0] ? { id: foodPreferences[0].id } : null,
-            food2: foodPreferences[1] ? { id: foodPreferences[1].id } : null,
-            food3: foodPreferences[2] ? { id: foodPreferences[2].id } : null,
-        };
+        const formData = new FormData();
+        formData.append('name', name);
+        formData.append('email', email);
+        formData.append('password', password);
+        formData.append('state', '활동 중');
 
-        console.log('요청 Body:', requestBody);
+        if (profileImage) {
+            formData.append('profileImage', profileImage); // 이미지 추가
+        }
+
+        formData.append('food1', foodPreferences[0] ? foodPreferences[0].id : null);
+        formData.append('food2', foodPreferences[1] ? foodPreferences[1].id : null);
+        formData.append('food3', foodPreferences[2] ? foodPreferences[2].id : null);
+
+        console.log('폼 데이터:', formData);
 
         try {
-            const response = await axios.post('/users', requestBody);
+            const response = await axios.post('/users', formData);
             console.log('회원가입 성공:', response.data);
             navigate('/login');
         } catch (error) {
@@ -104,6 +108,7 @@ function Register() {
             alert('회원가입 실패: 서버 오류');
         }
     };
+
 
     return (
         <div className="register-container">
