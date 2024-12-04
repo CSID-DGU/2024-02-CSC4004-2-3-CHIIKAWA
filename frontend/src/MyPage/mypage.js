@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 import './mypage.css';
+/* import Footer from "../Common/footer";
+import Header from "../Common/header"; */
 
 const MyPage = () => {
+    const navigate = useNavigate();
+
     const [name, setName] = useState('');
     const [foodPreferences, setFoodPreferences] = useState([]);
     const [profileScore, setProfileScore] = useState(4.5);
@@ -14,6 +19,45 @@ const MyPage = () => {
 
     // 서버에서 사용자 정보와 음식 데이터 가져오기
     useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                // sessionStorage에서 토큰 및 사용자 ID 가져오기
+                const token = sessionStorage.getItem('accessToken');
+                const userId = JSON.parse(sessionStorage.getItem('user'))?.id; // 로그인 시 저장된 사용자 ID
+    
+                if (!token || !userId) {
+                    alert('로그인이 필요합니다.');
+                    navigate('/login'); // 로그인 페이지로 리다이렉트
+                    return;
+                }
+    
+                const config = {
+                    headers: {
+                        Authorization: `Bearer ${token}`, // 토큰을 Authorization 헤더에 추가
+                    },
+                };
+    
+                // 사용자 정보 가져오기
+                const userResponse = await axios.get(`/users/${userId}`, config);
+    
+                console.log('사용자 정보:', userResponse.data);
+                console.log('선호 음식 데이터:', userResponse.data.foodPreferences);
+
+    
+                // 사용자 정보 상태 설정
+                setName(userResponse.data.name);
+                setFoodPreferences(userResponse.data.foodPreferences || []); // 서버에서 받은 선호 음식 초기화
+                setProfileScore(userResponse.data.profileScore || 4.5); // 기본값 설정
+    
+            } catch (error) {
+                console.error('사용자 정보 가져오기 실패:', error.response?.data || error.message);
+                alert('사용자 정보를 불러오는 중 오류가 발생했습니다.');
+                navigate('/login'); // 오류 발생 시 로그인 페이지로 리다이렉트
+            }
+        };
+
+        fetchUserData();
+
         const fetchFoodData = async () => {
             try {
                 // 메뉴와 음식 데이터를 병렬로 가져옴
@@ -50,7 +94,7 @@ const MyPage = () => {
         };
 
         fetchFoodData();
-    }, []);
+    }, [navigate]);
 
     // 음식 선택 핸들러
     const handleFoodSelection = (food) => {
@@ -66,16 +110,32 @@ const MyPage = () => {
     // 선호 음식 저장
     const saveFoodPreferences = async () => {
         try {
-            await axios.put('/api/user/profile', {
-                foodPreferences: foodPreferences.map((food) => food.id),
-            });
+            const userId = JSON.parse(sessionStorage.getItem('user'))?.id; // 사용자 ID 가져오기
+            if (!userId) {
+                alert('로그인이 필요합니다.');
+                navigate('/login'); // 로그인 페이지로 리다이렉트
+                return;
+            }
+    
+            const token = sessionStorage.getItem('accessToken'); // 토큰 가져오기
+            const config = {
+                headers: {
+                    Authorization: `Bearer ${token}`, // 인증 헤더 추가
+                },
+            };
+    
+            // 선호 음식 저장 API 호출
+            await axios.patch(`/users/${userId}`, {
+                foodPreferences: foodPreferences.map((food) => food.id), // 음식 ID 배열로 전송
+            }, config);
+    
             setIsPopupOpen(false);
             alert('선호 음식이 저장되었습니다.');
         } catch (error) {
-            console.error('선호 음식 저장 실패:', error);
+            console.error('선호 음식 저장 실패:', error.response?.data || error.message);
             alert('선호 음식을 저장하는 중 오류가 발생했습니다.');
         }
-    };
+    };    
 
     const saveName = async () => {
         try {
