@@ -1,0 +1,59 @@
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    max-height: 70vh;
+    overflow-y: auto;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.category-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 10px 0;
+}
+
+.option-button {
+    margin: 5px;
+    padding: 10px 15px;
+    background: #f4f4f4;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.option-button.selected {
+    background: #ff8c42;
+    color: #fff;
+    border-color: #ff8c42;
+}
+
+.confirm-button {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #ff8c42;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.confirm-button:hover {
+    background: #e67e3a;
+}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './register.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import SelectMenu from '../Common/selectmenu';
 
 function Register() {
     const [email, setEmail] = useState('');
@@ -10,43 +11,9 @@ function Register() {
     const [name, setName] = useState('');
     const [foodPreferences, setFoodPreferences] = useState([]);
     const [profileImage, setProfileImage] = useState(null);
+    const [uploadAttempts, setUploadAttempts] = useState(0); // 업로드 시도 횟수 상태 추가
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [foodData, setFoodData] = useState({});
-    const [uploadAttempts, setUploadAttempts] = useState(0); // 업로드 시도 횟수
     const navigate = useNavigate();
-
-    // 음식 데이터 가져오기
-    useEffect(() => {
-        const fetchFoodData = async () => {
-            try {
-                const [menuResponse, foodResponse] = await Promise.all([
-                    axios.get('/menus'),
-                    axios.get('/food'),
-                ]);
-
-                const menuMap = menuResponse.data.reduce((acc, menu) => {
-                    acc[menu.id] = menu.name;
-                    return acc;
-                }, {});
-
-                const groupedFoodData = foodResponse.data.reduce((acc, food) => {
-                    const categoryName = menuMap[food.menu.id] || `카테고리 ${food.menu.id}`;
-                    if (!acc[categoryName]) {
-                        acc[categoryName] = [];
-                    }
-                    acc[categoryName].push(food);
-                    return acc;
-                }, {});
-
-                setFoodData(groupedFoodData);
-            } catch (error) {
-                console.error('데이터 가져오기 실패:', error);
-                alert('음식 및 메뉴 데이터를 불러오는 중 오류가 발생했습니다.');
-            }
-        };
-
-        fetchFoodData();
-    }, []);
 
     const handleFoodSelection = (food) => {
         if (foodPreferences.find((item) => item.id === food.id)) {
@@ -175,17 +142,17 @@ function Register() {
                         required
                     />
                 </div>
-                <div className="register-input-container">
+                <div className="register-input-container select-menu-input">
                     <span className="register-icon">🍴</span>
                     <input
                         type="text"
-                        className="register-input"
                         placeholder="선호 음식을 선택하세요"
                         value={foodPreferences.map((item) => item.name).join(', ')}
                         onClick={() => setIsPopupOpen(true)}
                         readOnly
                     />
                 </div>
+
                 <div className="register-input-container">
                     <label className="register-icon">📷</label>
                     <input
@@ -199,35 +166,13 @@ function Register() {
                     회원가입
                 </button>
             </form>
-
-            {isPopupOpen && (
-                <div className="popup-overlay">
-                    <div className="popup-content">
-                        <h3>선호 음식을 선택하세요 (최대 3개)</h3>
-                        {Object.entries(foodData).map(([categoryName, foods]) => (
-                            <div key={categoryName}>
-                                <h4 className="category-title">{categoryName}</h4>
-                                {foods.map((food) => (
-                                    <button
-                                        key={food.id}
-                                        className={`option-button ${foodPreferences.find((item) => item.id === food.id) ? 'selected' : ''
-                                            }`}
-                                        onClick={() => handleFoodSelection(food)}
-                                    >
-                                        {food.name}
-                                    </button>
-                                ))}
-                            </div>
-                        ))}
-                        <button
-                            onClick={() => setIsPopupOpen(false)}
-                            className="confirm-button"
-                        >
-                            확인
-                        </button>
-                    </div>
-                </div>
-            )}
+            {/* SelectMenu 팝업 추가 */}
+            <SelectMenu
+                isPopupOpen={isPopupOpen}
+                onClose={() => setIsPopupOpen(false)}
+                foodPreferences={foodPreferences}
+                handleFoodSelection={handleFoodSelection}
+            />
         </div>
     );
 }
