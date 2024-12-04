@@ -1,3 +1,4 @@
+/* 팝업 오버레이 */
 .popup-overlay {
     position: fixed;
     top: 0;
@@ -11,49 +12,57 @@
     z-index: 1000;
 }
 
+/* 팝업 내용 */
 .popup-content {
-    background: #fff;
-    border-radius: 8px;
+    background: #FFFFFF;
     padding: 20px;
-    max-height: 70vh;
-    overflow-y: auto;
+    border-radius: 10px;
     width: 90%;
     max-width: 400px;
     text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+/* 카테고리 제목 */
 .category-title {
     font-size: 16px;
     font-weight: bold;
+    color: #FF8C42;
     margin: 10px 0;
 }
 
+/* 음식 선택 버튼 */
 .option-button {
+    display: inline-block;
     margin: 5px;
     padding: 10px 15px;
-    background: #f4f4f4;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 20px;
+    background-color: #FFFFFF;
+    /* 기본 상태: 하얀색 */
+    color: #333333;
+    border: 1px solid #DDDDDD;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s ease;
 }
 
 .option-button.selected {
-    background: #ff8c42;
-    color: #fff;
-    border-color: #ff8c42;
+    background-color: #FF8C42;
+    /* 선택된 상태: 오렌지색 */
+    color: #FFFFFF;
+    border: none;
 }
 
+/* 확인 버튼 */
 .confirm-button {
     margin-top: 20px;
-    padding: 10px 20px;
-    background: #ff8c42;
+    padding: 12px;
+    background-color: #FF8C42;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 8px;
     cursor: pointer;
 }
 
 .confirm-button:hover {
-    background: #e67e3a;
+    background-color: #E67E3A;
 }
