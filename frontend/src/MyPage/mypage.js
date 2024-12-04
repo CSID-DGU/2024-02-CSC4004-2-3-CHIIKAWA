@@ -145,7 +145,7 @@ const MyPage = () => {
 
             // API 호출
             await updateUser(user);
-            
+
             setIsPopupOpen(false);
             alert('선호 음식이 저장되었습니다.');
         } catch (error) {
@@ -208,7 +208,6 @@ const MyPage = () => {
                             className="edit-name-input"
                         />
                         <button onClick={saveName} className="confirm-button">저장</button>
-                        <button onClick={() => setIsEditingName(false)} className="cancel-button">취소</button>
                     </div>
                 )}
             <button onClick={() => setIsEditingName(true)} className="edit-button">닉네임 수정</button>
