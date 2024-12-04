@@ -122,3 +122,25 @@
 .no-button:hover {
     background-color: #d4d2d2;
 }
+
+.rating-stars {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin: 15px 0;
+}
+
+.star {
+    font-size: 30px;
+    color: #ddd;
+    cursor: pointer;
+    transition: color 0.2s, transform 0.2s;
+}
+
+.star.selected {
+    color: #FF8C42;
+}
+
+.modal-actions {
+    margin-top: 20px;
+}
