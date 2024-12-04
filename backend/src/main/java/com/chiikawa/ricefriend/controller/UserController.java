@@ -1,14 +1,22 @@
 package com.chiikawa.ricefriend.controller;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.util.List;
 
 import com.chiikawa.ricefriend.data.dto.UserDto;
 import com.chiikawa.ricefriend.service.UserService;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import javax.imageio.ImageIO;
 
 @RestController
 @RequiredArgsConstructor
@@ -28,8 +36,12 @@ public class UserController {
     }
 
     // 유저 등록
-    @PostMapping
-    public ResponseEntity<UserDto.UserSaveDto> saveUser(@RequestBody UserDto.UserSaveDto requestDto) {
+    @PostMapping(value = "", consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<UserDto.UserSaveDto> saveUser(@RequestPart("data") UserDto.UserSaveDto requestDto,
+                                                        @RequestPart("profileimg") MultipartFile profileImage) {
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>asdasdasd>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+        System.out.println(requestDto);
+
         userService.saveUser(requestDto);
 
         //return ResponseEntity.status(HttpStatus.CREATED).build();
@@ -72,5 +84,15 @@ public class UserController {
     @DeleteMapping("/delete/{id}")
     public void deleteUserById(@PathVariable int id) {
         userService.deleteUser(id);
+    }
+
+    //바이너리 변환
+    public String convertBinary(MultipartFile files) throws Exception{
+
+        String fileName = StringUtils.cleanPath(files.getOriginalFilename()) ;
+        BufferedImage image = ImageIO.read(files.getInputStream());
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(image, fileName.substring(fileName.lastIndexOf(".") + 1), baos);
+        return new String(Base64.encodeBase64(baos.toByteArray(), true));
     }
 }

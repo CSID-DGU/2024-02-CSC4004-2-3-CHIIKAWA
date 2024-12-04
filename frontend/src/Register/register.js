@@ -92,24 +92,32 @@ function Register() {
             return;
         }
 
+        const requestBody = {
+            name,
+            email,
+            password,
+            state: '활동 중',
+            food1: foodPreferences[0] ? { id: foodPreferences[0].id } : null,
+            food2: foodPreferences[1] ? { id: foodPreferences[1].id } : null,
+            food3: foodPreferences[2] ? { id: foodPreferences[2].id } : null,
+        };
+
         const formData = new FormData();
-        formData.append('name', name);
-        formData.append('email', email);
-        formData.append('password', password);
-        formData.append('state', '활동 중');
+        formData.append('data', JSON.stringify(requestBody));
+
 
         if (profileImage) {
-            formData.append('profileImage', profileImage);
+            formData.append('profileimg', profileImage);
         } else {
-            formData.append('profileImage', null); // 프로필 이미지가 없을 경우 처리
+            formData.append('profileimg', null); // 프로필 이미지가 없을 경우 처리
         }
 
-        formData.append('food1', foodPreferences[0] ? foodPreferences[0].id : null);
-        formData.append('food2', foodPreferences[1] ? foodPreferences[1].id : null);
-        formData.append('food3', foodPreferences[2] ? foodPreferences[2].id : null);
-
         try {
-            const response = await axios.post('/users', formData);
+            const response =  await axios.post('/users', formData, {
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            });
             console.log('회원가입 성공:', response.data);
             navigate('/login');
         } catch (error) {

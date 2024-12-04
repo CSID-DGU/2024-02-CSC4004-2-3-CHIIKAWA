@@ -47,6 +47,8 @@ public class UserService {
                 , requestDto.getFood1()
                 , requestDto.getFood2()
                 , requestDto.getFood3());
+
+        userRepository.save(user);
     }
 
     public List<UserDto.UserResponseDto> getAllUsers() {
