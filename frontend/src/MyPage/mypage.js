@@ -156,7 +156,7 @@ const MyPage = () => {
                 return;
             }
 
-            if(user.name == name) return;
+            if (user.name == name) return;
 
             user.name = name;
             console.log('업데이트 요청 데이터:', user);
