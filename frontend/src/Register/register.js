@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './register.css';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -10,7 +10,7 @@ function Register() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [name, setName] = useState('');
     const [foodPreferences, setFoodPreferences] = useState([]);
-    const [profileImage, setProfileImage] = useState(null);
+    const [profileImage, setProfileImage] = useState(null); // Base64로 인코딩된 이미지
     const [uploadAttempts, setUploadAttempts] = useState(0); // 업로드 시도 횟수 상태 추가
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const navigate = useNavigate();
@@ -25,7 +25,7 @@ function Register() {
         }
     };
 
-    const handleProfileImageChange = (e) => {
+    const handleProfileImageChange = async (e) => {
         const file = e.target.files[0];
 
         if (!file) {
@@ -41,8 +41,17 @@ function Register() {
             setProfileImage(null); // 사진 초기화
         } else {
             // 두 번째 시도에서 정상적으로 업로드
-            setProfileImage(file);
-            alert("사진 업로드 성공!");
+            const reader = new FileReader();
+            reader.onload = () => {
+                // Base64 데이터 추출
+                const base64Data = reader.result.split(',')[1];
+                setProfileImage(base64Data);
+                alert("사진 업로드 성공!");
+            };
+            reader.onerror = () => {
+                alert("사진 업로드 중 오류가 발생했습니다.");
+            };
+            reader.readAsDataURL(file); // 파일을 Base64로 읽기
         }
     };
 
@@ -59,30 +68,23 @@ function Register() {
             return;
         }
 
+        // 요청 본문 생성
         const requestBody = {
             name,
             email,
             password,
             state: '활동 중',
+            profileImage, // Base64로 인코딩된 이미지
             food1: foodPreferences[0] ? { id: foodPreferences[0].id } : null,
             food2: foodPreferences[1] ? { id: foodPreferences[1].id } : null,
             food3: foodPreferences[2] ? { id: foodPreferences[2].id } : null,
+
         };
 
-        const formData = new FormData();
-        formData.append('data', JSON.stringify(requestBody));
-
-
-        if (profileImage) {
-            formData.append('profileimg', profileImage);
-        } else {
-            formData.append('profileimg', null); // 프로필 이미지가 없을 경우 처리
-        }
-
         try {
-            const response =  await axios.post('/users', formData, {
+            const response = await axios.post('/users', requestBody, {
                 headers: {
-                    "Content-Type": "multipart/form-data",
+                    "Content-Type": "application/json",
                 },
             });
             console.log('회원가입 성공:', response.data);
