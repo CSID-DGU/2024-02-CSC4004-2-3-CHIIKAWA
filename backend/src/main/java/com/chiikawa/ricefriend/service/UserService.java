@@ -11,6 +11,7 @@ import com.chiikawa.ricefriend.data.repository.FoodCategoryRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -36,19 +37,17 @@ public class UserService {
         return userRepository.save(user);
     }
 
+    @Transactional
     public void updateUser(int id, UserDto.UserUpdateDto requestDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("id = "+ id + " 유저가 없습니다."));
 
-        user.update(requestDto.getPassword()
-                , requestDto.getName()
+        user.update(requestDto.getName()
                 , requestDto.getState()
                 , requestDto.getProfileimg()
                 , requestDto.getFood1()
                 , requestDto.getFood2()
                 , requestDto.getFood3());
-
-        userRepository.save(user);
     }
 
     public List<UserDto.UserResponseDto> getAllUsers() {

@@ -48,9 +48,8 @@ public class User implements Serializable {
         this.food3 = food3;
     }
 
-    public void update(String password, String name, String state, Blob profileimg
+    public void update(String name, String state, Blob profileimg
             , FoodCategory food1, FoodCategory food2, FoodCategory food3) {
-        this.password = password;
         this.name = name;
         this.state = state;
         this.profileimg = profileimg;

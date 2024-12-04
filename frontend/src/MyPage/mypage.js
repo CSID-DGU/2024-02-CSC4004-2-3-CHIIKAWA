@@ -145,7 +145,7 @@ const MyPage = () => {
 
             // API 호출
             await updateUser(user);
-    
+            
             setIsPopupOpen(false);
             alert('선호 음식이 저장되었습니다.');
         } catch (error) {
