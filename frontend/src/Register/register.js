@@ -11,31 +11,26 @@ function Register() {
     const [foodPreferences, setFoodPreferences] = useState([]);
     const [profileImage, setProfileImage] = useState(null);
     const [isPopupOpen, setIsPopupOpen] = useState(false);
-    const [foodData, setFoodData] = useState({}); // 음식 데이터를 저장할 상태
+    const [foodData, setFoodData] = useState({});
+    const [uploadAttempts, setUploadAttempts] = useState(0); // 업로드 시도 횟수
     const navigate = useNavigate();
 
-    // 서버에서 음식 데이터를 가져오기
+    // 음식 데이터 가져오기
     useEffect(() => {
         const fetchFoodData = async () => {
             try {
-                // 메뉴와 음식 데이터를 병렬로 가져옴
                 const [menuResponse, foodResponse] = await Promise.all([
-                    axios.get('/menus'), // 메뉴 데이터
-                    axios.get('/food')  // 음식 데이터
+                    axios.get('/menus'),
+                    axios.get('/food'),
                 ]);
 
-                console.log('메뉴 데이터:', menuResponse.data);
-                console.log('음식 데이터:', foodResponse.data);
-
-                // 메뉴 데이터를 맵으로 변환 (id -> name)
                 const menuMap = menuResponse.data.reduce((acc, menu) => {
-                    acc[menu.id] = menu.name; // id를 키로, name을 값으로 설정
+                    acc[menu.id] = menu.name;
                     return acc;
                 }, {});
 
-                // 음식 데이터를 카테고리별로 그룹화
                 const groupedFoodData = foodResponse.data.reduce((acc, food) => {
-                    const categoryName = menuMap[food.menu.id] || `카테고리 ${food.menu.id}`; // menu.id로 카테고리 이름 가져오기
+                    const categoryName = menuMap[food.menu.id] || `카테고리 ${food.menu.id}`;
                     if (!acc[categoryName]) {
                         acc[categoryName] = [];
                     }
@@ -43,8 +38,7 @@ function Register() {
                     return acc;
                 }, {});
 
-                console.log('그룹화된 음식 데이터:', groupedFoodData);
-                setFoodData(groupedFoodData); // 상태 업데이트
+                setFoodData(groupedFoodData);
             } catch (error) {
                 console.error('데이터 가져오기 실패:', error);
                 alert('음식 및 메뉴 데이터를 불러오는 중 오류가 발생했습니다.');
@@ -53,8 +47,6 @@ function Register() {
 
         fetchFoodData();
     }, []);
-
-
 
     const handleFoodSelection = (food) => {
         if (foodPreferences.find((item) => item.id === food.id)) {
@@ -67,7 +59,24 @@ function Register() {
     };
 
     const handleProfileImageChange = (e) => {
-        setProfileImage(e.target.files[0]);
+        const file = e.target.files[0];
+
+        if (!file) {
+            return;
+        }
+
+        // 업로드 시도 횟수 증가
+        setUploadAttempts((prev) => prev + 1);
+
+        if (uploadAttempts === 0) {
+            // 첫 번째 시도에서 "사람 얼굴 감지" 시뮬레이션
+            alert("사람 얼굴이 감지되어 업로드할 수 없는 사진입니다.");
+            setProfileImage(null); // 사진 초기화
+        } else {
+            // 두 번째 시도에서 정상적으로 업로드
+            setProfileImage(file);
+            alert("사진 업로드 성공!");
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -90,14 +99,14 @@ function Register() {
         formData.append('state', '활동 중');
 
         if (profileImage) {
-            formData.append('profileImage', profileImage); // 이미지 추가
+            formData.append('profileImage', profileImage);
+        } else {
+            formData.append('profileImage', null); // 프로필 이미지가 없을 경우 처리
         }
 
         formData.append('food1', foodPreferences[0] ? foodPreferences[0].id : null);
         formData.append('food2', foodPreferences[1] ? foodPreferences[1].id : null);
         formData.append('food3', foodPreferences[2] ? foodPreferences[2].id : null);
-
-        console.log('폼 데이터:', formData);
 
         try {
             const response = await axios.post('/users', formData);
@@ -108,7 +117,6 @@ function Register() {
             alert('회원가입 실패: 서버 오류');
         }
     };
-
 
     return (
         <div className="register-container">
@@ -165,7 +173,7 @@ function Register() {
                         type="text"
                         className="register-input"
                         placeholder="선호 음식을 선택하세요"
-                        value={foodPreferences.map(item => item.name).join(', ')}
+                        value={foodPreferences.map((item) => item.name).join(', ')}
                         onClick={() => setIsPopupOpen(true)}
                         readOnly
                     />
@@ -194,7 +202,8 @@ function Register() {
                                 {foods.map((food) => (
                                     <button
                                         key={food.id}
-                                        className={`option-button ${foodPreferences.find((item) => item.id === food.id) ? 'selected' : ''}`}
+                                        className={`option-button ${foodPreferences.find((item) => item.id === food.id) ? 'selected' : ''
+                                            }`}
                                         onClick={() => handleFoodSelection(food)}
                                     >
                                         {food.name}
@@ -202,7 +211,6 @@ function Register() {
                                 ))}
                             </div>
                         ))}
-
                         <button
                             onClick={() => setIsPopupOpen(false)}
                             className="confirm-button"
