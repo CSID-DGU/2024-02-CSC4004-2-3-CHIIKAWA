@@ -18,9 +18,9 @@ const OpenChat = () => {
   const [newRoom, setNewRoom] = useState({ name: "", limitednum: 2, state: "모집 중" });
   const [userId, setUserId] = useState(null);
 
-  const storedUser = JSON.parse(sessionStorage.getItem('user'));
-
   useEffect(() => {
+    const storedUser = JSON.parse(sessionStorage.getItem('user'));
+
     // 로그인 정보가 없으면 로그인창으로 쫓겨남
     if (!storedUser || !storedUser.id) {
       alert("로그인이 필요합니다. 로그인 페이지로 이동합니다.");
@@ -38,13 +38,13 @@ const OpenChat = () => {
           state: room.state,
           members: room.limitednum,
           currentParticipants: 0,
-          contains: false,
+          containsMe: false
         })).filter((data) => data.state == "모집 중");
-        console.log(mappedData)
+
         setChatRooms(mappedData);
         setIsLoading(false);
 
-        await fetchParticipants(response.data.map((room) => room.id));
+        await fetchParticipants(mappedData, response.data.map((room) => room.id));
       } catch (error) {
         console.error("채팅방 데이터를 불러오는 중 오류가 발생했습니다.", error);
         setChatRooms([]);
@@ -65,32 +65,26 @@ const OpenChat = () => {
       response.data.forEach((entry) => {
         const roomId = entry.chatroom.id;
 
-        console.log(userId);
-        console.log(entry.user.id);
-        
-        if(storedUser.id == entry.user.id) {
+        if(userId == entry.user.id) {
           containsMe[roomId] = true;
+        } else if(!containsMe[roomId]) {
+          containsMe[roomId] = false;
         }
-        console.log(roomId);
-        console.log(containsMe[roomId]);
 
         if (!participantCounts[roomId]) {
           participantCounts[roomId] = 0;
         }
         participantCounts[roomId] += 1;
       });
-
+      
       setChatRooms((prevRooms) =>
         prevRooms.map((room) =>
           roomIds.includes(room.id)
             ? {
                 ...room,
                 currentParticipants: participantCounts[room.id] || 0,
-                state:
-                participantCounts[room.id] === room.members
-                  ? "모집 마감"
-                  : room.state,
-                contains: containsMe[room.id],
+                state: room.members == participantCounts[room.id] ? "모집 마감" : "모집 중",
+                containsMe: containsMe[room.id],
               }
             : room
         )
@@ -172,7 +166,7 @@ const OpenChat = () => {
               filteredRooms.map((room) => (
                 <div
                   key={room.id}
-                  className={!room.contains ? "chat-room" : "contains-chat-room"}
+                  className={!room.containsMe ? "chat-room" : "contains-chat-room"}
                   onClick={() => handleRoomClick(room)}
                 >
                   <div className="room-info">
@@ -181,11 +175,12 @@ const OpenChat = () => {
                       <p>상태: {room.state}</p>
                       <span>현재 인원: {room.currentParticipants || 0} / {room.members}명</span>
                     </div>
-                    {room.contains && (
+                    {room.containsMe && (
                       <div className="status-badge">참여 중</div>
                     )}
                   </div>
                 </div>
+                
               ))
             ) : (
               <p>검색 결과가 없습니다.</p>

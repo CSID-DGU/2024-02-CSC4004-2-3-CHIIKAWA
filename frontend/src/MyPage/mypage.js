@@ -259,7 +259,8 @@ const MyPage = () => {
                                     ))}
                                 </div>
                             ))}
-                            <button onClick={saveFoodPreferences} className="confirm-button">저장</button>
+                            <button onClick={saveFoodPreferences} className="name-save-button">저장</button>
+                            <button className="name-close-button" onClick={() => setIsFoodPopupOpen(false)}> 닫기</button>
                         </div>
                     </div>
                 )
