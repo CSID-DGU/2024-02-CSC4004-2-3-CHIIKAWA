@@ -26,7 +26,7 @@ const MessageType = {
   LEAVE: "LEAVE"
 };
 
-const ChatRoom = ({ route, navigate }) => {
+const ChatRoom = () => {
   const [message, setMessage] = useState(""); // 메세지 입력창
   const [messages, setMessages] = useState([]); // 메세지 박스
   const [isRightSidebarOpen, setIsRightSidebarOpen] = useState(false);
@@ -38,8 +38,6 @@ const ChatRoom = ({ route, navigate }) => {
   // 현재 유저, 룸 불러오기
   const curUser = JSON.parse(sessionStorage.getItem('user')); // 초기값을 null로 설정
   const [curRoom, setChatRoom] = useState();
-
-  console.log(route?.params.roomid);
 
   // navigate를 통해 입장했을 때
   const location = useLocation();
@@ -77,10 +75,11 @@ const ChatRoom = ({ route, navigate }) => {
   const getChatroomsByUserId = async () => {
     const rooms = await axios.get(`/chatrooms/chatroom/${curUser.id}`);
 
-    if (navigatedRoom == undefined) {
-      setChatRoom(rooms.data[0] || undefined);
-    } else {
+    const chkExistFlag = "enterflag" in sessionStorage;
+    if (navigatedRoom && chkExistFlag) {
       setChatRoom(navigatedRoom);
+    } else {
+      setChatRoom(rooms.data[0] || undefined);
     }
 
     rooms.data.forEach(room => {
@@ -127,35 +126,40 @@ const ChatRoom = ({ route, navigate }) => {
     // Subscribe to the Public Topic
     stompClient.current.subscribe(`/sub/chatroom/${curRoom.id}`, (msg) => {
       const newMessage = JSON.parse(msg.body);
+
+      if (newMessage.type != MessageType.CHAT) {
+        getMembersByRoomId();
+      }
+
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
-    if (navigatedRoom) {
-      console.log(navigatedRoom);
-
+    const enterflag = sessionStorage.getItem('enterflag');
+    if (enterflag == "JOIN") {
       const joinMessage = {
         user: curUser,
         chatroom: curRoom,
         type: MessageType.JOIN,
         detail: curUser.name + "님이 입장하셨습니다."
       };
-      
+
       // Tell your message to the server
       stompClient.current.send(`/pub/addUser`, {}, JSON.stringify(joinMessage));
       setNavigatedRoom(null);
+      sessionStorage.removeItem('enterflag');
     }
   }
 
   const onDisconnected = () => {
-      const leaveMessage = {
-        user: curUser,
-        chatroom: curRoom,
-        type: MessageType.LEAVE,
-        detail: curUser.name + "님이 퇴장하셨습니다."
-      };
+    const leaveMessage = {
+      user: curUser,
+      chatroom: curRoom,
+      type: MessageType.LEAVE,
+      detail: curUser.name + "님이 퇴장하셨습니다."
+    };
 
-      // Tell your message to the server
-      stompClient.current.send(`/pub/leaveUser`, {}, JSON.stringify(leaveMessage));
+    // Tell your message to the server
+    stompClient.current.send(`/pub/leaveUser`, {}, JSON.stringify(leaveMessage));
   }
 
   function onError(error) {

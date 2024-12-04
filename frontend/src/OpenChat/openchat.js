@@ -58,6 +58,8 @@ const OpenChat = () => {
 
       console.log(responseData.data);
       setIsJoinModalOpen(false);
+
+      sessionStorage.setItem('enterflag', "JOIN");
       navigate(`/chatroom`, { state: { room: selectedRoom } });
     } catch (error) {
       console.error("채팅방에 참여하는 중 오류가 발생했습니다.", error);
