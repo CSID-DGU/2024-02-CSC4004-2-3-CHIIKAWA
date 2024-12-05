@@ -46,7 +46,7 @@ const MyPage = () => {
 
                 console.log('사용자 정보:', userResponse.data);
                 setName(userResponse.data.name);
-                setProfileScore(userResponse.data.profileScore || 4.5); // 기본값 설정
+                setProfileScore(userResponse.data.profileScore || 4.0); // 기본값 설정
                 // 프로필 이미지 설정
             
 
