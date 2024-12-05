@@ -11,8 +11,8 @@ const ChatGroup = ({ user, group, isCurRoom, onClick, onDisconnected }) => {
     const onClickQuit = async () => {
         await axios.delete(`/chatparts/delete/${user.id}/${group.id}`)
         setIsPopupOpen(false);
-        
-        window.location.replace('/chatroom');
+        navigate("/rating");
+        //window.location.replace('/chatroom');
         onDisconnected();
     }
 
