@@ -10,7 +10,6 @@ function Register() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [name, setName] = useState('');
     const [foodPreferences, setFoodPreferences] = useState([]);
-    const [profileImage, setProfileImage] = useState(null); // Base64로 인코딩된 이미지
     const [uploadAttempts, setUploadAttempts] = useState(0); // 업로드 시도 횟수 상태 추가
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const navigate = useNavigate();
@@ -25,30 +24,20 @@ function Register() {
         }
     };
 
-    const handleProfileImageChange = async (e) => {
+    const handleProfileImageChange = (e) => {
         const file = e.target.files[0];
 
         if (!file) {
-            alert("파일을 선택해주세요.");
+            alert('파일을 선택해주세요.');
             return;
         }
 
         setUploadAttempts((prev) => prev + 1);
 
         if (uploadAttempts === 0) {
-            alert("사람 얼굴이 감지되어 업로드할 수 없는 사진입니다.");
-            setProfileImage(null);
+            alert('사람 얼굴이 감지되어 업로드할 수 없는 사진입니다.');
         } else {
-            const reader = new FileReader();
-            reader.onload = () => {
-                console.log("Base64 변환 성공:", reader.result);
-                setProfileImage(reader.result); // Base64 데이터를 상태에 저장
-            };
-            reader.onerror = (error) => {
-                console.error("Base64 변환 실패:", error);
-                alert("이미지 변환 중 오류가 발생했습니다.");
-            };
-            reader.readAsDataURL(file); // 파일을 Base64로 읽기
+            console.log('이미지가 선택되었습니다:', file.name);
         }
     };
 
@@ -65,38 +54,19 @@ function Register() {
             return;
         }
 
-        if (!profileImage) {
-            alert("프로필 이미지를 업로드해주세요.");
-            return;
-        }
-
         try {
-            // Base64 → Blob 변환
-            const mimeType = profileImage.split(',')[0].match(/:(.*?);/)[1];
-            const base64Data = profileImage.split(',')[1];
-            const byteCharacters = atob(base64Data);
-            const byteNumbers = Array.from(byteCharacters, (char) => char.charCodeAt(0));
-            const byteArray = new Uint8Array(byteNumbers);
-            const blob = new Blob([byteArray], { type: mimeType }); // Blob 생성
-
-            console.log("Blob 생성 확인:", blob); // Blob이 제대로 생성되었는지 확인
-
-            // Blob과 메타데이터를 요청 Body에 포함하기 위해 새로운 객체 생성
             const requestBody = {
                 name,
                 email,
                 password,
                 state: '활동 중',
-                profileimg: blob, // Blob 데이터 포함
                 food1: foodPreferences[0] ? { id: foodPreferences[0].id } : null,
                 food2: foodPreferences[1] ? { id: foodPreferences[1].id } : null,
                 food3: foodPreferences[2] ? { id: foodPreferences[2].id } : null,
-
             };
-            console.log("전송 데이터:", requestBody);
 
+            console.log('전송 데이터:', requestBody);
 
-            // 요청 전송 (Blob 포함)ç
             const response = await axios.post('/users', requestBody, {
                 headers: {
                     'Content-Type': 'application/json',
@@ -104,13 +74,18 @@ function Register() {
             });
 
             console.log('회원가입 성공:', response.data);
+
+            // response body에서 이미지 데이터를 처리
+            if (response.data.profileImage) {
+                console.log('서버에서 받은 프로필 이미지 URL:', response.data.profileImage);
+            }
+
             navigate('/login');
         } catch (error) {
             console.error('회원가입 실패:', error);
             alert('회원가입 실패: 서버 오류');
         }
     };
-
 
     return (
         <div className="register-container">

@@ -31,13 +31,13 @@ function Swipe() {
         const users = await axios.get(`/users`);
         const filteredUsers = users.data.filter((user) => user != storedUser.id);
 
-        filteredUsers[0]["url"] = process.env.PUBLIC_URL + '/hamburger.jpg';
-        filteredUsers[1]["url"] = process.env.PUBLIC_URL + '/pizza.jpg';
-        filteredUsers[2]["url"] = process.env.PUBLIC_URL + '/ramen.jpg';
-        filteredUsers[3]["url"] = process.env.PUBLIC_URL + '/sandwich.jpg';
-        filteredUsers[4]["url"] = process.env.PUBLIC_URL + '/tteokbokki.jpg';
-        filteredUsers[5]["url"] = process.env.PUBLIC_URL + '/hamburger.jpg';
-        filteredUsers[6]["url"] = process.env.PUBLIC_URL + '/pizza.jpg';
+        filteredUsers[0]["url"] = process.env.PUBLIC_URL + '/jjajjang.jpg';
+        filteredUsers[1]["url"] = process.env.PUBLIC_URL + '/waffle.jpg';
+        filteredUsers[2]["url"] = process.env.PUBLIC_URL + '/pizzaa.jpg';
+        filteredUsers[3]["url"] = process.env.PUBLIC_URL + '/dogie.jpg';
+        filteredUsers[4]["url"] = process.env.PUBLIC_URL + '/ramenn.jpg';
+        filteredUsers[5]["url"] = process.env.PUBLIC_URL + '/boogie.jpg';
+        filteredUsers[6]["url"] = process.env.PUBLIC_URL + '/bokki.jpg';
 
         setCharacters(filteredUsers);
     };
