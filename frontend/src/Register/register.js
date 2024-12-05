@@ -79,19 +79,24 @@ function Register() {
             const byteArray = new Uint8Array(byteNumbers);
             const blob = new Blob([byteArray], { type: mimeType }); // Blob 생성
 
+            console.log("Blob 생성 확인:", blob); // Blob이 제대로 생성되었는지 확인
+
             // Blob과 메타데이터를 요청 Body에 포함하기 위해 새로운 객체 생성
             const requestBody = {
                 name,
                 email,
                 password,
                 state: '활동 중',
+                profileimg: blob, // Blob 데이터 포함
                 food1: foodPreferences[0] ? { id: foodPreferences[0].id } : null,
                 food2: foodPreferences[1] ? { id: foodPreferences[1].id } : null,
                 food3: foodPreferences[2] ? { id: foodPreferences[2].id } : null,
-                profileimg: blob, // Blob 데이터 포함
-            };
 
-            // 요청 전송 (Blob 포함)
+            };
+            console.log("전송 데이터:", requestBody);
+
+
+            // 요청 전송 (Blob 포함)ç
             const response = await axios.post('/users', requestBody, {
                 headers: {
                     'Content-Type': 'application/json',
