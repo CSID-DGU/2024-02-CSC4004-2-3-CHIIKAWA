@@ -166,7 +166,6 @@ body {
     padding: 20px 40px; /* 텍스트 주변 여백 */
     border-radius: 10px; /* 부드러운 모서리 */
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
-    z-index: 100; /* 다른 요소 위에 표시되도록 */
     text-align: center;
   }
   
