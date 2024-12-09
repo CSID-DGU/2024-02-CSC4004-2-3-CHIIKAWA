@@ -322,3 +322,25 @@
   color: #666;
   margin: 10px 0;
 }
+
+/* 로딩 중 텍스트를 중앙에 띄우는 스타일 */
+.is-loading {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* 중앙 정렬 */
+  background-color: rgba(255, 248, 235, 0.9); /* 콘텐츠 영역 배경 반투명 베이지 */
+  padding: 20px 40px; /* 텍스트 주변 여백 */
+  border-radius: 10px; /* 부드러운 모서리 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* 그림자 추가 */
+  z-index: 100; /* 다른 요소 위에 표시되도록 */
+  text-align: center;
+}
+
+/* "로딩 중" 텍스트 스타일 */
+.is-loading span {
+  font-size: 1.8rem; /* 적당히 큰 글씨 크기 */
+  font-weight: bold; /* 강조된 텍스트 */
+  color: #FF914D; /* 오렌지 컬러로 강조 */
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2); /* 약간의 그림자 */
+}

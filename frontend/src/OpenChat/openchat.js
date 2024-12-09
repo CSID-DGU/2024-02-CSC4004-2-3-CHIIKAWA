@@ -65,7 +65,7 @@ const OpenChat = () => {
       response.data.forEach((entry) => {
         const roomId = entry.chatroom.id;
 
-        if(storedUser.id == entry.user.id) {
+        if (storedUser.id == entry.user.id) {
           containsMe[roomId] = true;
         }
 
@@ -79,14 +79,14 @@ const OpenChat = () => {
         prevRooms.map((room) =>
           roomIds.includes(room.id)
             ? {
-                ...room,
-                currentParticipants: participantCounts[room.id] || 0,
-                state:
+              ...room,
+              currentParticipants: participantCounts[room.id] || 0,
+              state:
                 participantCounts[room.id] === room.members
                   ? "모집 마감"
                   : room.state,
-                contains: containsMe[room.id],
-              }
+              contains: containsMe[room.id],
+            }
             : room
         )
       );
@@ -162,7 +162,9 @@ const OpenChat = () => {
           </div>
           <div className="chat-list">
             {isLoading ? (
-              <p>로딩 중...</p>
+              <div class="is-loading">
+                <span>로딩 중...</span>
+              </div>
             ) : filteredRooms.length > 0 ? (
               filteredRooms.map((room) => (
                 <div
