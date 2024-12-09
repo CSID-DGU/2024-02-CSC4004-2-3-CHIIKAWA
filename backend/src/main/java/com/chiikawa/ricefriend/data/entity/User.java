@@ -1,5 +1,6 @@
 package com.chiikawa.ricefriend.data.entity;
 
+import java.math.BigDecimal;
 import java.sql.Blob;
 import java.io.Serializable;
 
@@ -35,9 +36,12 @@ public class User implements Serializable {
     @JoinColumn(name="favfood_id3", referencedColumnName="id")
     private FoodCategory food3;
 
+    private BigDecimal rating;
+    private int ratingqty;
+
     @Builder
     protected User(String email, String password, String name, String state, Blob profileimg
-            , FoodCategory food1, FoodCategory food2, FoodCategory food3) {
+            , FoodCategory food1, FoodCategory food2, FoodCategory food3, BigDecimal rating, int ratingqty) {
         this.email = email;
         this.password = password;
         this.name = name;
@@ -46,16 +50,20 @@ public class User implements Serializable {
         this.food1 = food1;
         this.food2 = food2;
         this.food3 = food3;
+        this.rating = rating;
+        this.ratingqty = ratingqty;
     }
 
     public void update(String name, String state, Blob profileimg
-            , FoodCategory food1, FoodCategory food2, FoodCategory food3) {
+            , FoodCategory food1, FoodCategory food2, FoodCategory food3, BigDecimal rating, int ratingqty) {
         this.name = name;
         this.state = state;
         this.profileimg = profileimg;
         this.food1 = food1;
         this.food2 = food2;
         this.food3 = food3;
+        this.rating = rating;
+        this.ratingqty = ratingqty;
     }
 
     public boolean checkPassword(String password){

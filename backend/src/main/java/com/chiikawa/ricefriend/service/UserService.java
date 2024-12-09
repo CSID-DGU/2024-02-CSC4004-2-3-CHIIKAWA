@@ -47,7 +47,9 @@ public class UserService {
                 , requestDto.getProfileimg()
                 , requestDto.getFood1()
                 , requestDto.getFood2()
-                , requestDto.getFood3());
+                , requestDto.getFood3()
+                , requestDto.getRating()
+                , requestDto.getRatingqty());
     }
 
     public List<UserDto.UserResponseDto> getAllUsers() {

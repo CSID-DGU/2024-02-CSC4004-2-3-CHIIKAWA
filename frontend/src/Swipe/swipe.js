@@ -29,7 +29,7 @@ function Swipe() {
 
     const getUsers = async () => {
         const users = await axios.get(`/users`);
-        const filteredUsers = users.data.filter((user) => user != storedUser.id);
+        const filteredUsers = users.data.filter((user) => user.id != storedUser.id);
 
         filteredUsers[0]["url"] = process.env.PUBLIC_URL + '/jjajjang.jpg';
         filteredUsers[1]["url"] = process.env.PUBLIC_URL + '/waffle.jpg';
@@ -64,8 +64,6 @@ function Swipe() {
 
                 const response = await axios.post('/chatrooms', newRoom);
                 const createdRoom = response.data;
-
-                console.log(response);
 
                 // 생성된 채팅룸에 참가
                 await axios.post(`/chatparts?userid=${userId}&roomid=${createdRoom.id}`);

@@ -1,20 +1,52 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
+
 import './rating.css';
-import { useNavigate } from 'react-router-dom';
+import userEvent from '@testing-library/user-event';
 
 function Rating() {
-    const [rating, setRating] = useState(0);
+    const [rating, setRating] = useState(5);
     const [feedback, setFeedback] = useState('');
     const navigate = useNavigate();
+
+    // navigate를 통해 입장했을 때
+    const location = useLocation();
+    const [roomId, setRoomId] = useState(location?.state?.roomid);
+    const [opponent, setOpponent] = useState();
+
+    console.log(roomId);
+
+    useEffect(() => {
+        getOpponent();
+    }, []);
+
+    // 채팅 내역 조회하고 불러오기
+    const getOpponent = async () => {
+        const response = await axios.get(`users/chatroom/${roomId}`);
+
+        console.log(response.data[0]);
+        setOpponent(response.data[0]);
+    };
 
     const handleStarClick = (index) => {
         setRating(index);
         setFeedback(''); // 새로운 별 선택 시 입력 초기화
     };
 
-    const handleSubmit = () => {
-        console.log(`송지은님에게 준 점수: ${rating}점`);
+    const handleSubmit = async () => {
+        opponent.ratingqty += 1;
+        opponent.rating = (opponent.rating + rating) / opponent.ratingqty;
+
+        console.log(opponent.ratingqty);
+
+        // 업데이트 API 호출
+        await axios.patch(`/users/${opponent.id}`, opponent);
+
+        console.log(`${opponent.name}님에게 준 점수: ${rating}점`);
         console.log(`피드백: ${feedback}`);
+
+        alert("aaa");
         window.location.replace('/chatroom');
         //navigate('/swipe'); // /swipe로 이동
     };
@@ -22,7 +54,7 @@ function Rating() {
     return (
         <div className="rating-container">
             <div className="rating-box">
-                <h2>송지은님의 밥친구 점수는?</h2>
+                <h2>식사는 어떠셨나요?</h2>
                 <div className="stars">
                     {[...Array(5)].map((_, index) => {
                         const starIndex = index + 1;

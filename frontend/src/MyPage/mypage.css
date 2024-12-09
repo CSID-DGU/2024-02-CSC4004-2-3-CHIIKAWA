@@ -22,7 +22,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    height: 88vh;
     flex-direction: column;
     background-color: #FFF4E6;
 }
@@ -35,7 +35,7 @@ body {
 
 .mypage-favfood {
     font-size: 1.5rem;
-    margin-top: 1rem;
+    margin-top: 10px;
     color: #333;
 }
 
@@ -84,6 +84,7 @@ body {
 }
 
 .edit-button {
+    width: 130px;
     background-color: #FF8C42;
     color: white;
     border: none;
@@ -91,7 +92,7 @@ body {
     border-radius: 5px;
     cursor: pointer;
     margin-top: 20px;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
     font-size: 1rem;
     transition: background-color 0.3s;
 }
@@ -142,4 +143,14 @@ body {
 
 .name-close-button:hover {
     background-color: #d4d2d2;
+}
+
+.logout-button {
+    color: #a09e9e;
+    text-decoration: underline;
+    margin-top: 10px;
+}
+.logout-button:hover {
+    cursor: pointer;
+    color: #d4d2d2;
 }

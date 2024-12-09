@@ -14,11 +14,10 @@ const MyPage = () => {
 
     const [name, setName] = useState('');
     const [foodPreferences, setFoodPreferences] = useState([]);
-    const [profileScore, setProfileScore] = useState(4.5);
+    const [rating, setRating] = useState(5);
     const [isNamePopupOpen, setIsNamePopupOpen] = useState(false);
     const [isFoodPopupOpen, setIsFoodPopupOpen] = useState(false);
     const [foodData, setFoodData] = useState({});
-    const [isEditingName, setIsEditingName] = useState(false);
 
     const user = JSON.parse(sessionStorage.getItem('user'));
 
@@ -44,11 +43,10 @@ const MyPage = () => {
                 // 사용자 정보 가져오기
                 const userResponse = await axios.get(`/users/${user.id}`, config);
 
-                console.log('사용자 정보:', userResponse.data);
                 setName(userResponse.data.name);
-                setProfileScore(userResponse.data.profileScore || 4.0); // 기본값 설정
+                setRating(userResponse.data.rating); // 기본값 설정
                 // 프로필 이미지 설정
-            
+
 
                 // 선호 음식 데이터 설정
                 const favoriteFoods = [];
@@ -73,9 +71,6 @@ const MyPage = () => {
                     axios.get('/menus'), // 메뉴 데이터
                     axios.get('/food')  // 음식 데이터
                 ]);
-
-                console.log('메뉴 데이터:', menuResponse.data);
-                console.log('음식 데이터:', foodResponse.data);
 
                 const menuMap = menuResponse.data.reduce((acc, menu) => {
                     acc[menu.id] = menu.name;
@@ -104,22 +99,11 @@ const MyPage = () => {
     // 사용자 업데이트 API 요청
     const updateUser = async (user) => {
         try {
-            // sessionStorage에서 토큰 가져오기
-            const token = sessionStorage.getItem('accessToken');
-            if (!token) {
-                throw new Error('로그인이 필요합니다.');
-            }
-
             // 업데이트 API 호출
-            const response = await axios.patch(`/users/${user.id}`, user);
-
-            console.log('사용자 업데이트 성공:', response.data);
-            alert('사용자 정보가 성공적으로 업데이트되었습니다.');
-            return response.data;
+            await axios.patch(`/users/${user.id}`, user);
         } catch (error) {
             console.error('사용자 업데이트 실패:', error.response?.data || error.message);
             alert('사용자 정보를 업데이트하는 중 오류가 발생했습니다.');
-            throw error;
         }
     };
 
@@ -135,13 +119,11 @@ const MyPage = () => {
             user.food1 = foodPreferences[0] ? { id: foodPreferences[0].id } : null;
             user.food2 = foodPreferences[1] ? { id: foodPreferences[1].id } : null;
             user.food3 = foodPreferences[2] ? { id: foodPreferences[2].id } : null;
-            console.log('업데이트 요청 데이터:', user);
 
             // API 호출
             await updateUser(user);
 
             setIsFoodPopupOpen(false);
-            //alert('선호 음식이 저장되었습니다.');
         } catch (error) {
             console.error('선호 음식 저장 실패:', error.response?.data || error.message);
             alert('선호 음식을 저장하는 중 오류가 발생했습니다.');
@@ -151,22 +133,18 @@ const MyPage = () => {
     // 이름 저장
     const saveName = async () => {
         try {
-            const user = JSON.parse(sessionStorage.getItem('user')); // 사용자 ID 가져오기
             if (!user) {
                 alert('로그인이 필요합니다.');
                 navigate('/login'); // 로그인 페이지로 리다이렉트
                 return;
             }
 
-            if (user.name == name) return;
-
             user.name = name;
-            console.log('업데이트 요청 데이터:', user);
 
             // API 호출
             await updateUser(user);
 
-            setIsEditingName(false);
+            setIsNamePopupOpen(false);
         } catch (error) {
             console.error('닉네임 저장 실패:', error);
             alert('닉네임 저장 중 오류가 발생했습니다.');
@@ -184,6 +162,13 @@ const MyPage = () => {
         }
     };
 
+    const onClickLogout = () => {
+        sessionStorage.removeItem('user');
+        sessionStorage.removeItem('accessToken');
+
+        navigate('/login');
+    }
+
     // 출력
     return (
         <div className="mypage-container">
@@ -196,18 +181,9 @@ const MyPage = () => {
                 className="profile-picture"
             />
 
-            <div className="profile-score">평가 점수: {profileScore.toFixed(1)} / 5</div>
-            {isEditingName && (
-                <div className="edit-name-container">
-                    <input
-                        type="text"
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        className="edit-name-input"
-                    />
-                    <button onClick={saveName} className="confirm-button">저장</button>
-                </div>
-            )}
+            <div className="profile-score">{rating != 0 ?
+                `평가 점수: ${rating.toFixed(1)} / 5`
+                : `아직 평가가 없습니다.`}</div>
             <button className="edit-button" onClick={() => setIsNamePopupOpen(true)}>닉네임 수정</button>
 
             <h3 className='mypage-favfood'>선호 음식</h3>
@@ -222,24 +198,28 @@ const MyPage = () => {
             </div>
 
             <button onClick={() => setIsFoodPopupOpen(true)} className="edit-button">선호 음식 수정</button>
+            <div className='logout-button' onClick={onClickLogout}>
+                로그아웃
+            </div>
 
             {/* 이름 수정 팝업 */}
-            {isNamePopupOpen && (
-                <div className="popup-overlay">
-                    <div className="name-popup-content">
-                        <div className="edit-name-container">
-                            <input
-                                type="text"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="edit-name-input"
-                            />
+            {
+                isNamePopupOpen && (
+                    <div className="popup-overlay">
+                        <div className="name-popup-content">
+                            <div className="edit-name-container">
+                                <input
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="edit-name-input"
+                                />
+                            </div>
+                            <button className="name-save-button" onClick={saveName} >저장</button>
+                            <button className="name-close-button" onClick={() => setIsNamePopupOpen(false)}> 닫기</button>
                         </div>
-                        <button className="name-save-button" onClick={saveName} >저장</button>
-                        <button className="name-close-button" onClick={() => setIsNamePopupOpen(false)}> 닫기</button>
                     </div>
-                </div>
-            )
+                )
             }
 
             {/* 음식 수정 팝업 */}

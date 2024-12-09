@@ -63,7 +63,6 @@ const ChatRoom = () => {
   }, [curRoom]);
 
   const refresh = async () => {
-    console.log(curRoom);
     if (curUser && curRoom) {
       await getMembersByRoomId();
       setRoomName(curRoom.name);

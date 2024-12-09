@@ -1,5 +1,6 @@
 package com.chiikawa.ricefriend.data.dto;
 
+import java.math.BigDecimal;
 import java.sql.Blob;
 
 import com.chiikawa.ricefriend.data.entity.FoodCategory;
@@ -47,6 +48,9 @@ public class UserDto {
         private FoodCategory food1;
         private FoodCategory food2;
         private FoodCategory food3;
+
+        private BigDecimal rating;
+        private int ratingqty;
     }
 
 // ===================요청, 응답 구분선 ================
@@ -75,6 +79,9 @@ public class UserDto {
         @JsonInclude(JsonInclude.Include.NON_DEFAULT)
         private FoodCategory food3;
 
+        private BigDecimal rating;
+        private int ratingqty;
+
         public UserResponseDto(User user) {
             this.id = user.getId();
             this.email = user.getEmail();
@@ -84,6 +91,8 @@ public class UserDto {
             this.food1 = user.getFood1();
             this.food2 = user.getFood2();
             this.food3 = user.getFood3();
+            this.rating = user.getRating();
+            this.ratingqty = user.getRatingqty();
         }
     }
 }

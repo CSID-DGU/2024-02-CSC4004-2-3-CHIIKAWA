@@ -10,17 +10,16 @@ const ChatGroup = ({ user, group, isCurRoom, onClick, onDisconnected }) => {
 
     const onClickQuit = async () => {
         const response = await axios.get(`/chatrooms/${group.id}`);
-        if (!response.data.state) {
-            await axios.delete(`/chatparts/delete/${user.id}/${group.id}`);
-            setIsPopupOpen(false);
-            navigate("/rating");
-            onDisconnected();
-        } else {
-            await axios.delete(`/chatparts/delete/${user.id}/${group.id}`);
-            setIsPopupOpen(false);
+
+        await axios.delete(`/chatparts/delete/${user.id}/${group.id}`);
+        setIsPopupOpen(false);
+
+        if (!response.data.state)
+            navigate("/rating", { state: { roomid: group.id } });
+        else
             window.location.replace('/chatroom');
-            onDisconnected();
-        }
+
+        onDisconnected();
     };
 
     return (
