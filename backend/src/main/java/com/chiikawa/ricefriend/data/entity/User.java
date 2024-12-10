@@ -1,7 +1,6 @@
 package com.chiikawa.ricefriend.data.entity;
 
 import java.math.BigDecimal;
-import java.sql.Blob;
 import java.io.Serializable;
 
 import lombok.*;
@@ -24,7 +23,7 @@ public class User implements Serializable {
 
     private String state;
 
-    private Blob profileimg;
+    private String profileimg;
 
     @ManyToOne
     @JoinColumn(name="favfood_id1", referencedColumnName="id")
@@ -40,7 +39,7 @@ public class User implements Serializable {
     private int ratingqty;
 
     @Builder
-    protected User(String email, String password, String name, String state, Blob profileimg
+    protected User(String email, String password, String name, String state, String profileimg
             , FoodCategory food1, FoodCategory food2, FoodCategory food3, BigDecimal rating, int ratingqty) {
         this.email = email;
         this.password = password;
@@ -54,7 +53,7 @@ public class User implements Serializable {
         this.ratingqty = ratingqty;
     }
 
-    public void update(String name, String state, Blob profileimg
+    public void update(String name, String state, String profileimg
             , FoodCategory food1, FoodCategory food2, FoodCategory food3, BigDecimal rating, int ratingqty) {
         this.name = name;
         this.state = state;

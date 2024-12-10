@@ -13,6 +13,7 @@ const MyPage = () => {
     const navigate = useNavigate();
 
     const [isLoading, setIsLoading] = useState(true);
+    const [profileImg, setProfileImg] = useState('');
     const [name, setName] = useState('');
     const [foodPreferences, setFoodPreferences] = useState([]);
     const [rating, setRating] = useState(5);
@@ -44,10 +45,9 @@ const MyPage = () => {
                 // 사용자 정보 가져오기
                 const userResponse = await axios.get(`/users/${user.id}`, config);
 
+                setProfileImg(userResponse.data.profileimg);
                 setName(userResponse.data.name);
                 setRating(userResponse.data.rating); // 기본값 설정
-                // 프로필 이미지 설정
-
 
                 // 선호 음식 데이터 설정
                 const favoriteFoods = [];
@@ -107,6 +107,18 @@ const MyPage = () => {
             console.error('사용자 업데이트 실패:', error.response?.data || error.message);
             alert('사용자 정보를 업데이트하는 중 오류가 발생했습니다.');
         }
+    };
+
+    const handleProfileImageChange = async (e) => {
+        const file = e.target.files[0];
+
+        if (!file) {
+            alert('파일을 선택해주세요.');
+            return;
+        }
+
+        await toBase64(file);
+        await updateUser(user);
     };
 
     // 선호 음식 저장
@@ -170,6 +182,23 @@ const MyPage = () => {
 
         navigate('/login');
     }
+    
+    const onClickImageUpload = () => {
+        document.getElementById('mypage-input').click();
+    }
+
+    const toBase64 = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+            resolve(reader.result);
+            user.profileimg = e.target.result;
+            setProfileImg(e.target.result);
+            
+            console.log(e);
+        }
+        reader.onerror = reject;
+    });
 
     // 출력
     return (
@@ -184,13 +213,22 @@ const MyPage = () => {
                     <h2 className='mypage-title'>마이페이지</h2>
                     <p className='mypage-introduce'>안녕하세요, {name}님!</p>
                     <img
-                        src="/chiikawa.jpeg" // public 디렉토리의 chiikawa.jpeg 이미지
-                        alt="Profile"
+                        src={profileImg != null ?
+                            profileImg
+                            : process.env.PUBLIC_URL + `/default_user.jpg`} // public 디렉토리의 chiikawa.jpeg 이미지
                         className="profile-picture"
+                        onClick={() => document.getElementById("file-input").click()}
                     />
+                        <input
+                            id="file-input"
+                            type="file"
+                            className="mypage-input"
+                            accept="image/*"
+                            onChange={handleProfileImageChange}
+                        />
 
                     <div className="profile-score">{rating != 0 ?
-                        `평가 점수: ${rating.toFixed(1)} / 5`
+                        `평가 점수: ${rating} / 5`
                         : `아직 평가가 없습니다.`}</div>
                     <button className="edit-button" onClick={() => setIsNamePopupOpen(true)}>닉네임 수정</button>
 

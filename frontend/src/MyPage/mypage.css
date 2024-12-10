@@ -33,6 +33,10 @@ body {
     margin-bottom: 1rem;
 }
 
+.mypage-input {
+    display: none;
+}
+
 .mypage-favfood {
     font-size: 1.5rem;
     margin-top: 10px;
@@ -148,7 +152,7 @@ body {
 .logout-button {
     color: #a09e9e;
     text-decoration: underline;
-    margin-top: 10px;
+    margin-top: 20px;
 }
 
 .logout-button:hover {

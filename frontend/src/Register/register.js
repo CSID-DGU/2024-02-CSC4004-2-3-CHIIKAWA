@@ -10,6 +10,7 @@ function Register() {
     const [confirmPassword, setConfirmPassword] = useState('');
     const [name, setName] = useState('');
     const [foodPreferences, setFoodPreferences] = useState([]);
+    const [profileImg, setProfileImg] = useState();
     const [uploadAttempts, setUploadAttempts] = useState(0); // 업로드 시도 횟수 상태 추가
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const navigate = useNavigate();
@@ -24,8 +25,10 @@ function Register() {
         }
     };
 
-    const handleProfileImageChange = (e) => {
+    const handleProfileImageChange = async (e) => {
         const file = e.target.files[0];
+
+        await toBase64(file);
 
         if (!file) {
             alert('파일을 선택해주세요.');
@@ -60,9 +63,11 @@ function Register() {
                 email,
                 password,
                 state: '활동 중',
+                profileimg: profileImg,
                 food1: foodPreferences[0] ? { id: foodPreferences[0].id } : null,
                 food2: foodPreferences[1] ? { id: foodPreferences[1].id } : null,
                 food3: foodPreferences[2] ? { id: foodPreferences[2].id } : null,
+                rating: 0.0
             };
 
             console.log('전송 데이터:', requestBody);
@@ -86,6 +91,18 @@ function Register() {
             alert('회원가입 실패: 서버 오류');
         }
     };
+
+    const toBase64 = (file) => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = (e) => {
+            resolve(reader.result);
+            setProfileImg(e.target.result);
+            //document.getElementById('profileImg').src = e.target.result;
+            console.log(e);
+        }
+        reader.onerror = reject;
+    });
 
     return (
         <div className="register-container">
@@ -148,7 +165,12 @@ function Register() {
                 </div>
 
                 <div className="register-input-container">
-                    <label className="register-icon">📷</label>
+                    <img id="profileImg"
+                        className='register-profileimg'
+                        src={profileImg != null ?
+                            profileImg
+                            : process.env.PUBLIC_URL + `/default_user.jpg`}></img>
+                    <label className="register-img-icon">📷</label>
                     <input
                         type="file"
                         className="register-input"

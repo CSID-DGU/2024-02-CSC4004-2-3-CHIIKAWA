@@ -31,14 +31,6 @@ function Swipe() {
         const users = await axios.get(`/users`);
         const filteredUsers = users.data.filter((user) => user.id != storedUser.id);
 
-        filteredUsers[0]["url"] = process.env.PUBLIC_URL + '/jjajjang.jpg';
-        filteredUsers[1]["url"] = process.env.PUBLIC_URL + '/waffle.jpg';
-        filteredUsers[2]["url"] = process.env.PUBLIC_URL + '/pizzaa.jpg';
-        filteredUsers[3]["url"] = process.env.PUBLIC_URL + '/dogie.jpg';
-        filteredUsers[4]["url"] = process.env.PUBLIC_URL + '/ramenn.jpg';
-        filteredUsers[5]["url"] = process.env.PUBLIC_URL + '/boogie.jpg';
-        filteredUsers[6]["url"] = process.env.PUBLIC_URL + '/bokki.jpg';
-
         setCharacters(filteredUsers);
     };
 
@@ -110,7 +102,9 @@ function Swipe() {
                         onCardLeftScreen={() => outOfFrame(character)}
                     >
                         <div
-                            style={{ backgroundImage: `url(${character.url})` }}
+                            style={{ backgroundImage: `url(${character.profileimg != null ?
+                                character.profileimg
+                                : process.env.PUBLIC_URL + `/default_user.jpg`})` }}
                             className="swipe-card"
                         >
                             <h3>{character.name}</h3>

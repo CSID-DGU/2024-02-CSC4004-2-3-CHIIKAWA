@@ -1,13 +1,15 @@
 package com.chiikawa.ricefriend.data.dto;
 
 import java.math.BigDecimal;
-import java.sql.Blob;
+import java.sql.Clob;
 
 import com.chiikawa.ricefriend.data.entity.FoodCategory;
 import com.chiikawa.ricefriend.data.entity.User;
 
+import jakarta.persistence.Column;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.w3c.dom.Text;
 
 public class UserDto {
     @Builder
@@ -17,10 +19,11 @@ public class UserDto {
         private String email;
         private String password;
         private String name;
-        private Blob profileimg;
+        private String profileimg;
         private FoodCategory food1;
         private FoodCategory food2;
         private FoodCategory food3;
+        private BigDecimal rating;
 
         public User toEntity() {
             return User.builder()
@@ -31,6 +34,7 @@ public class UserDto {
                     .food1(food1)
                     .food2(food2)
                     .food3(food3)
+                    .rating(rating)
                     .build();
         }
     }
@@ -43,7 +47,7 @@ public class UserDto {
 
         private String state;
 
-        private Blob profileimg;
+        private String profileimg;
 
         private FoodCategory food1;
         private FoodCategory food2;
@@ -70,7 +74,7 @@ public class UserDto {
         private String state;
 
         @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-        private Blob profileimg;
+        private String profileimg;
 
         @JsonInclude(JsonInclude.Include.NON_DEFAULT)
         private FoodCategory food1;
