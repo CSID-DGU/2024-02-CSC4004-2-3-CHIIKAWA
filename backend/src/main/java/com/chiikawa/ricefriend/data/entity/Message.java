@@ -6,6 +6,7 @@ import lombok.*;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 
 @Getter
 @NoArgsConstructor
@@ -18,9 +19,11 @@ public class Message implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)// auto_increment
     private int id;
 
+    @ManyToOne
     @JoinColumn(name="userid", referencedColumnName="id")
     private User user;
 
+    @ManyToOne
     @JoinColumn(name="roomid", referencedColumnName="id")
     private ChatRoom chatroom;
 
@@ -28,10 +31,16 @@ public class Message implements Serializable {
     @Enumerated(EnumType.STRING)
     private MessageType type;
 
+    private String detail;
+
+    private Timestamp senttime;
+
     @Builder
-    protected Message(User user, ChatRoom chatroom, MessageType type) {
+    protected Message(User user, ChatRoom chatroom, MessageType type, String detail, Timestamp senttime) {
         this.user = user;
         this.chatroom = chatroom;
         this.type = type;
+        this.detail = detail;
+        this.senttime = senttime;
     }
 }

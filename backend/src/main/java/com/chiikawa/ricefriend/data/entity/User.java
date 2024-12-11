@@ -1,6 +1,6 @@
 package com.chiikawa.ricefriend.data.entity;
 
-import java.sql.Blob;
+import java.math.BigDecimal;
 import java.io.Serializable;
 
 import lombok.*;
@@ -23,7 +23,7 @@ public class User implements Serializable {
 
     private String state;
 
-    private Blob profileimg;
+    private String profileimg;
 
     @ManyToOne
     @JoinColumn(name="favfood_id1", referencedColumnName="id")
@@ -35,26 +35,34 @@ public class User implements Serializable {
     @JoinColumn(name="favfood_id3", referencedColumnName="id")
     private FoodCategory food3;
 
+    private BigDecimal rating;
+    private int ratingqty;
+
     @Builder
-    protected User(String email, String password, String name, Blob profileimg
-            , FoodCategory food1, FoodCategory food2, FoodCategory food3) {
+    protected User(String email, String password, String name, String state, String profileimg
+            , FoodCategory food1, FoodCategory food2, FoodCategory food3, BigDecimal rating, int ratingqty) {
         this.email = email;
         this.password = password;
         this.name = name;
+        this.state = state;
         this.profileimg = profileimg;
         this.food1 = food1;
         this.food2 = food2;
         this.food3 = food3;
+        this.rating = rating;
+        this.ratingqty = ratingqty;
     }
 
-    public void update(String password, String name, Blob profileimg
-            , FoodCategory food1, FoodCategory food2, FoodCategory food3) {
-        this.password = password;
+    public void update(String name, String state, String profileimg
+            , FoodCategory food1, FoodCategory food2, FoodCategory food3, BigDecimal rating, int ratingqty) {
         this.name = name;
+        this.state = state;
         this.profileimg = profileimg;
         this.food1 = food1;
         this.food2 = food2;
         this.food3 = food3;
+        this.rating = rating;
+        this.ratingqty = ratingqty;
     }
 
     public boolean checkPassword(String password){

@@ -3,7 +3,6 @@ package com.chiikawa.ricefriend.controller;
 import java.util.List;
 
 import com.chiikawa.ricefriend.data.dto.ChatPartDto;
-import com.chiikawa.ricefriend.data.dto.MessageDto;
 import com.chiikawa.ricefriend.data.entity.ChatPartId;
 import com.chiikawa.ricefriend.service.ChatPartService;
 
@@ -19,10 +18,23 @@ public class ChatPartController {
 
     private final ChatPartService chatpartService;
 
-    // 메세지 등록
+    // chatpart 등록
+//    @PostMapping
+//    public ResponseEntity<ChatPartDto.ChatPartSaveDto> saveChatPart(@RequestBody ChatPartDto.ChatPartSaveDto requestDto) {
+//        chatpartService.saveChatPart(requestDto);
+//
+//        //return ResponseEntity.status(HttpStatus.CREATED).build();
+//        return new ResponseEntity<>(HttpStatus.CREATED);
+//    }
+
+    // chatpart 등록
     @PostMapping
-    public ResponseEntity<ChatPartDto.ChatPartSaveDto> saveChatPart(@RequestBody ChatPartDto.ChatPartSaveDto requestDto) {
-        chatpartService.saveChatPart(requestDto);
+    public ResponseEntity<ChatPartDto.ChatPartSaveDto> saveChatPartbyCompositeId(@RequestParam int userid, @RequestParam int roomid) {
+        System.out.println("====================SAVE====================");
+        System.out.println(userid);
+        System.out.println(roomid);
+
+        chatpartService.saveChatPartbyCompositeId(userid, roomid);
 
         //return ResponseEntity.status(HttpStatus.CREATED).build();
         return new ResponseEntity<>(HttpStatus.CREATED);

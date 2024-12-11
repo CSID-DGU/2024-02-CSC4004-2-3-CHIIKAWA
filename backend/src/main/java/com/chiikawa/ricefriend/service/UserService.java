@@ -6,12 +6,12 @@ import java.util.stream.Collectors;
 
 import com.chiikawa.ricefriend.data.dto.UserDto;
 import com.chiikawa.ricefriend.data.entity.User;
-import com.chiikawa.ricefriend.data.entity.FoodCategory;
 import com.chiikawa.ricefriend.data.repository.UserRepository;
 import com.chiikawa.ricefriend.data.repository.FoodCategoryRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserService {
@@ -29,28 +29,40 @@ public class UserService {
     }
 
     public User saveUser(UserDto.UserSaveDto requestDto) {
-        FoodCategory food1 = foodRepository.findById(requestDto.getFavfood_id1()).orElseThrow();
-        FoodCategory food2 = foodRepository.findById(requestDto.getFavfood_id2()).orElseThrow();
-        FoodCategory food3 = foodRepository.findById(requestDto.getFavfood_id3()).orElseThrow();
+        //FoodCategory food1 = foodRepository.findById(requestDto.getFavfood_id1()).orElseThrow();
+        //FoodCategory food2 = foodRepository.findById(requestDto.getFavfood_id2()).orElseThrow();
+        //FoodCategory food3 = foodRepository.findById(requestDto.getFavfood_id3()).orElseThrow();
 
-        User user = requestDto.toEntity(food1, food2, food3);
+        User user = requestDto.toEntity();
         return userRepository.save(user);
     }
 
+    @Transactional
     public void updateUser(int id, UserDto.UserUpdateDto requestDto) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("id = "+ id + " 유저가 없습니다."));
 
-        user.update(requestDto.getPassword()
-                , requestDto.getName()
+        user.update(requestDto.getName()
+                , requestDto.getState()
                 , requestDto.getProfileimg()
                 , requestDto.getFood1()
                 , requestDto.getFood2()
-                , requestDto.getFood3());
+                , requestDto.getFood3()
+                , requestDto.getRating()
+                , requestDto.getRatingqty());
     }
 
     public List<UserDto.UserResponseDto> getAllUsers() {
         List<User> users = userRepository.findAll();
+
+        return users.stream()
+                .map(UserDto.UserResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    // 채팅방 id로 멤버 조회
+    public List<UserDto.UserResponseDto> getAllUsersByRoomId(int roomid) {
+        List<User> users = userRepository.findAllByRoomid(roomid);
 
         return users.stream()
                 .map(UserDto.UserResponseDto::new)

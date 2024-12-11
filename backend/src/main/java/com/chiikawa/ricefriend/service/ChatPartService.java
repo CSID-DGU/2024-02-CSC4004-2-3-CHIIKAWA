@@ -8,12 +8,8 @@ import com.chiikawa.ricefriend.data.dto.ChatPartDto;
 
 import com.chiikawa.ricefriend.data.entity.ChatPart;
 import com.chiikawa.ricefriend.data.entity.ChatPartId;
-import com.chiikawa.ricefriend.data.entity.User;
-import com.chiikawa.ricefriend.data.entity.ChatRoom;
 
 import com.chiikawa.ricefriend.data.repository.ChatPartRepository;
-import com.chiikawa.ricefriend.data.repository.UserRepository;
-import com.chiikawa.ricefriend.data.repository.ChatRoomRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,16 +18,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ChatPartService {
     @Autowired
     private ChatPartRepository chatpartRepository;
-    private UserRepository userRepository;
-    private ChatRoomRepository chatRoomRepository;
 
     public ChatPart saveChatPart(ChatPartDto.ChatPartSaveDto requestDto) {
-        User user = userRepository.findById(requestDto.getUserid()).orElseThrow();
-        ChatRoom chatroom = chatRoomRepository.findById(requestDto.getRoomid()).orElseThrow();
-
-        ChatPart chatpart = requestDto.toEntity(user, chatroom);
+        System.out.println("====================== SAVE_CHATPART ======================");
+        System.out.println(requestDto.getUser());
+        System.out.println(requestDto.getChatroom());
+        ChatPart chatpart = requestDto.toEntity();
 
         return chatpartRepository.save(chatpart);
+    }
+
+    public void saveChatPartbyCompositeId(int userid, int roomid) {
+        chatpartRepository.saveByCompositeId(userid, roomid);
     }
 
     public List<ChatPartDto.ChatPartResponseDto> getAllChatParts() {

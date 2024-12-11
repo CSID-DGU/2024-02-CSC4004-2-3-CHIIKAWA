@@ -5,11 +5,7 @@ import java.util.stream.Collectors;
 
 import com.chiikawa.ricefriend.data.dto.MessageDto;
 import com.chiikawa.ricefriend.data.entity.Message;
-import com.chiikawa.ricefriend.data.entity.User;
-import com.chiikawa.ricefriend.data.entity.ChatRoom;
 import com.chiikawa.ricefriend.data.repository.MessageRepository;
-import com.chiikawa.ricefriend.data.repository.UserRepository;
-import com.chiikawa.ricefriend.data.repository.ChatRoomRepository;
 
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,20 +14,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class MessageService {
     @Autowired
     private MessageRepository messageRepository;
-    private UserRepository userRepository;
-    private ChatRoomRepository chatRoomRepository;
 
     public Message saveMessage(MessageDto.MessageSaveDto requestDto) {
-        User user = userRepository.findById(requestDto.getUserid()).orElseThrow();
-        ChatRoom chatroom = chatRoomRepository.findById(requestDto.getRoomid()).orElseThrow();
 
-        Message message = requestDto.toEntity(user, chatroom);
+        Message message = requestDto.toEntity();
 
         return messageRepository.save(message);
     }
 
     public List<MessageDto.MessageResponseDto> getAllMessages() {
         List<Message> messages = messageRepository.findAll();
+
+        return messages.stream()
+                .map(MessageDto.MessageResponseDto::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<MessageDto.MessageResponseDto> getMessagesByRoomId(int roomid) {
+        List<Message> messages = messageRepository.findByRoomId(roomid);
 
         return messages.stream()
                 .map(MessageDto.MessageResponseDto::new)

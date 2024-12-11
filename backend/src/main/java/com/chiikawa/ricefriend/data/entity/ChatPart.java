@@ -14,10 +14,12 @@ import java.io.Serializable;
 @IdClass(ChatPartId.class)
 public class ChatPart implements Serializable {
     @Id
+    @ManyToOne
     @JoinColumn(name="userid", referencedColumnName="id")
     private User user;
 
     @Id
+    @ManyToOne
     @JoinColumn(name="roomid", referencedColumnName="id")
     private ChatRoom chatroom;
 

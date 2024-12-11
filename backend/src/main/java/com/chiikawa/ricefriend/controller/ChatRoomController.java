@@ -3,6 +3,7 @@ package com.chiikawa.ricefriend.controller;
 import java.util.List;
 
 import com.chiikawa.ricefriend.data.dto.ChatRoomDto;
+import com.chiikawa.ricefriend.data.entity.ChatRoom;
 import com.chiikawa.ricefriend.service.ChatRoomService;
 
 import lombok.RequiredArgsConstructor;
@@ -17,16 +18,17 @@ public class ChatRoomController {
 
     private final ChatRoomService chatroomService;
 
-    // 유저 등록
+    // 채팅방 등록
     @PostMapping
-    public ResponseEntity<ChatRoomDto.ChatRoomSaveDto> saveChatRoom(@RequestBody ChatRoomDto.ChatRoomSaveDto requestDto) {
-        chatroomService.saveChatRoom(requestDto);
+    public ResponseEntity<ChatRoom> saveChatRoom(@RequestBody ChatRoomDto.ChatRoomSaveDto requestDto) {
+        ChatRoom chatroom = chatroomService.saveChatRoom(requestDto);
 
         //return ResponseEntity.status(HttpStatus.CREATED).build();
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        System.out.println(HttpStatus.CREATED);
+        return new ResponseEntity<>(chatroom, HttpStatus.CREATED);
     }
 
-    // 유저 수정
+    // 채팅방 수정
     @PatchMapping("/{id}")
     public ResponseEntity<ChatRoomDto.ChatRoomUpdateDto> updateChatRoom(@PathVariable int id, @RequestBody ChatRoomDto.ChatRoomUpdateDto requestDto) {
         chatroomService.updateChatRoom(id, requestDto);
@@ -34,15 +36,7 @@ public class ChatRoomController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    // 유저 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<ChatRoomDto.ChatRoomResponseDto> getChatRoomById(@PathVariable int id) {
-        ChatRoomDto.ChatRoomResponseDto responseDto = chatroomService.getChatRoomById(id);
-
-        return ResponseEntity.ok(responseDto);
-    }
-
-    // 전체 유저 조회
+    // 전체 채팅방 조회
     @GetMapping
     public ResponseEntity<List<ChatRoomDto.ChatRoomResponseDto>> getRoomList() {
         List<ChatRoomDto.ChatRoomResponseDto> roomList = chatroomService.getAllChatRooms();
@@ -50,7 +44,23 @@ public class ChatRoomController {
         return ResponseEntity.ok(roomList);
     }
 
-    // 유저 삭제
+    // 유저 아이디를 활용한 채팅방 전체 조회
+    @GetMapping("/chatroom/{userid}")
+    public ResponseEntity<List<ChatRoomDto.ChatRoomResponseDto>> getChatRoomByUserId(@PathVariable int userid) {
+        List<ChatRoomDto.ChatRoomResponseDto> roomList = chatroomService.getAllChatRoomsByUserId(userid);
+
+        return ResponseEntity.ok(roomList);
+    }
+
+    // 채팅방 조회
+    @GetMapping("/{id}")
+    public ResponseEntity<ChatRoomDto.ChatRoomResponseDto> getChatRoomById(@PathVariable int id) {
+        ChatRoomDto.ChatRoomResponseDto responseDto = chatroomService.getChatRoomById(id);
+
+        return ResponseEntity.ok(responseDto);
+    }
+
+    // 채팅방 삭제
     @DeleteMapping("/delete/{id}")
     public void deleteChatRoomById(@PathVariable int id) {
         chatroomService.deleteChatRoom(id);

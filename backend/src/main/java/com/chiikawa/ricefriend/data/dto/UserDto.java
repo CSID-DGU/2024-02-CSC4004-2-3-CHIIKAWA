@@ -1,26 +1,31 @@
 package com.chiikawa.ricefriend.data.dto;
 
-import java.sql.Blob;
+import java.math.BigDecimal;
+import java.sql.Clob;
 
 import com.chiikawa.ricefriend.data.entity.FoodCategory;
 import com.chiikawa.ricefriend.data.entity.User;
 
+import jakarta.persistence.Column;
 import lombok.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import org.w3c.dom.Text;
 
 public class UserDto {
-    @Getter
     @Builder
+    @Getter
+    @Setter
     public static class UserSaveDto{
         private String email;
         private String password;
         private String name;
-        private Blob profileimg;
-        private int favfood_id1;
-        private int favfood_id2;
-        private int favfood_id3;
+        private String profileimg;
+        private FoodCategory food1;
+        private FoodCategory food2;
+        private FoodCategory food3;
+        private BigDecimal rating;
 
-        public User toEntity(FoodCategory food1, FoodCategory food2, FoodCategory food3) {
+        public User toEntity() {
             return User.builder()
                     .email(email)
                     .password(password)
@@ -29,6 +34,7 @@ public class UserDto {
                     .food1(food1)
                     .food2(food2)
                     .food3(food3)
+                    .rating(rating)
                     .build();
         }
     }
@@ -41,11 +47,14 @@ public class UserDto {
 
         private String state;
 
-        private Blob profileimg;
+        private String profileimg;
 
         private FoodCategory food1;
         private FoodCategory food2;
         private FoodCategory food3;
+
+        private BigDecimal rating;
+        private int ratingqty;
     }
 
 // ===================요청, 응답 구분선 ================
@@ -65,7 +74,7 @@ public class UserDto {
         private String state;
 
         @JsonInclude(JsonInclude.Include.NON_DEFAULT)
-        private Blob profileimg;
+        private String profileimg;
 
         @JsonInclude(JsonInclude.Include.NON_DEFAULT)
         private FoodCategory food1;
@@ -73,6 +82,9 @@ public class UserDto {
         private FoodCategory food2;
         @JsonInclude(JsonInclude.Include.NON_DEFAULT)
         private FoodCategory food3;
+
+        private BigDecimal rating;
+        private int ratingqty;
 
         public UserResponseDto(User user) {
             this.id = user.getId();
@@ -83,6 +95,8 @@ public class UserDto {
             this.food1 = user.getFood1();
             this.food2 = user.getFood2();
             this.food3 = user.getFood3();
+            this.rating = user.getRating();
+            this.ratingqty = user.getRatingqty();
         }
     }
 }
