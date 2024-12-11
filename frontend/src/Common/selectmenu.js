@@ -10,8 +10,8 @@ function SelectMenu({ isPopupOpen, onClose, foodPreferences, handleFoodSelection
         const fetchFoodData = async () => {
             try {
                 const [menuResponse, foodResponse] = await Promise.all([
-                    axios.get('/menus'),
-                    axios.get('/food'),
+                    axios.get('https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/menus'),
+                    axios.get('https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/food'),
                 ]);
 
                 const menuMap = menuResponse.data.reduce((acc, menu) => {

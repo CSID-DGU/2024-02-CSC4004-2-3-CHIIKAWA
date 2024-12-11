@@ -9,9 +9,9 @@ const ChatGroup = ({ user, group, isCurRoom, onClick, onDisconnected }) => {
     const [isPopupOpen, setIsPopupOpen] = useState(false);
 
     const onClickQuit = async () => {
-        const response = await axios.get(`/chatrooms/${group.id}`);
+        const response = await axios.get(`https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/chatrooms/${group.id}`);
 
-        await axios.delete(`/chatparts/delete/${user.id}/${group.id}`);
+        await axios.delete(`https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/chatparts/delete/${user.id}/${group.id}`);
         setIsPopupOpen(false);
 
         if (!response.data.state)

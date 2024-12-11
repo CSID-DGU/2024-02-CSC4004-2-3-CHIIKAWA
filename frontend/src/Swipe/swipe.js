@@ -28,7 +28,7 @@ function Swipe() {
     }, []);
 
     const getUsers = async () => {
-        const users = await axios.get(`/users`);
+        const users = await axios.get(`https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/users`);
         const filteredUsers = users.data.filter((user) => user.id != storedUser.id);
 
         setCharacters(filteredUsers);
@@ -54,12 +54,12 @@ function Swipe() {
                     limitednum: 2,
                 };
 
-                const response = await axios.post('/chatrooms', newRoom);
+                const response = await axios.post('https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/chatrooms', newRoom);
                 const createdRoom = response.data;
 
                 // 생성된 채팅룸에 참가
-                await axios.post(`/chatparts?userid=${userId}&roomid=${createdRoom.id}`);
-                await axios.post(`/chatparts?userid=${character.id}&roomid=${createdRoom.id}`);
+                await axios.post(`https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/chatparts?userid=${userId}&roomid=${createdRoom.id}`);
+                await axios.post(`https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/chatparts?userid=${character.id}&roomid=${createdRoom.id}`);
 
                 // 성공적으로 생성된 경우 알림 및 효과
                 confetti({

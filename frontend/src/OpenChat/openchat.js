@@ -31,7 +31,7 @@ const OpenChat = () => {
     setUserId(storedUser.id);
     const fetchChatRooms = async () => {
       try {
-        const response = await axios.get("/chatrooms");
+        const response = await axios.get("https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/chatrooms");
         const mappedData = response.data.map((room) => ({
           id: room.id,
           title: room.name,
@@ -58,7 +58,7 @@ const OpenChat = () => {
   // 방 현재 인원 확인
   const fetchParticipants = async (roomIds) => {
     try {
-      const response = await axios.get("/chatparts");
+      const response = await axios.get("https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/chatparts");
       const containsMe = {};
       const participantCounts = {};
 
@@ -107,7 +107,7 @@ const OpenChat = () => {
     }
 
     try {
-      const responseData = await axios.post(`/chatparts?userid=${userId}&roomid=${selectedRoom.id}`);
+      const responseData = await axios.post(`https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/chatparts?userid=${userId}&roomid=${selectedRoom.id}`);
       console.log(responseData.data);
       setIsJoinModalOpen(false);
 
@@ -121,11 +121,11 @@ const OpenChat = () => {
   const handleCreateRoom = async () => {
     try {
       // 방 생성
-      const response = await axios.post("/chatrooms", newRoom);
+      const response = await axios.post("https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/chatrooms", newRoom);
       const createdRoom = response.data;
 
       // 생성된 방에 참가
-      await axios.post(`/chatparts?userid=${userId}&roomid=${createdRoom.id}`);
+      await axios.post(`https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/chatparts?userid=${userId}&roomid=${createdRoom.id}`);
 
       // 새로 생성된 방 추가
       setChatRooms([...chatRooms, { id: createdRoom.id, ...newRoom }]);

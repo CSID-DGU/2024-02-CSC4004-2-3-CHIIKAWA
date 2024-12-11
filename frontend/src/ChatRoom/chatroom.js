@@ -72,7 +72,7 @@ const ChatRoom = () => {
   }
 
   const getChatroomsByUserId = async () => {
-    const rooms = await axios.get(`/chatrooms/chatroom/${curUser.id}`);
+    const rooms = await axios.get(`https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/chatrooms/chatroom/${curUser.id}`);
 
     const chkExistFlag = "enterflag" in sessionStorage;
     if (navigatedRoom && chkExistFlag) {
@@ -89,7 +89,7 @@ const ChatRoom = () => {
   };
 
   const getMembersByRoomId = async () => {
-    const members = await axios.get(`/users/chatroom/${curRoom.id}`);
+    const members = await axios.get(`https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/users/chatroom/${curRoom.id}`);
     members.data.forEach(member => {
       member["avatar"] = <AccountCircleOutlinedIcon sx={{ fontSize: 30, color: "#666" }} />;
     });
@@ -99,7 +99,7 @@ const ChatRoom = () => {
   // 채팅 내역 조회하고 불러오기
   const getMessageHistory = async () => {
     try {
-      await axios.get(`/messages/${curRoom.id}`)
+      await axios.get(`https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/messages/${curRoom.id}`)
         .then(response => {
           setMessages(response.data);
         });
@@ -110,7 +110,7 @@ const ChatRoom = () => {
 
   // 웹소켓 연결 설정
   const connect = () => {
-    const socket = new WebSocket("ws://localhost:8080/ws");
+    const socket = new WebSocket("wss://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/ws");
     stompClient.current = Stomp.over(socket);
     stompClient.current.connect({}, onConnected, onError);
   }

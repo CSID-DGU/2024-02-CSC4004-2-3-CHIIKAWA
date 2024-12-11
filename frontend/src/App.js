@@ -24,7 +24,7 @@ const App = () => {
   async function getUser(params) {
       try {
         // GET 요청은 params에 실어 보냄
-        const response = await axios.get('/users', {
+        const response = await axios.get('https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/users', {
           params: {
             id: 1
           }
@@ -40,7 +40,7 @@ const App = () => {
   async function postUser(params) {
       try {
         // POST 요청은 body에 실어 보냄
-        let result = await axios.post('/users', {
+        let result = await axios.post('https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/users', {
           name: 'Fred',
           email: 'test@test.com',
           password: '123',

@@ -43,7 +43,7 @@ const MyPage = () => {
                 };
 
                 // 사용자 정보 가져오기
-                const userResponse = await axios.get(`/users/${user.id}`, config);
+                const userResponse = await axios.get(`https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/users/${user.id}`, config);
 
                 setProfileImg(userResponse.data.profileimg);
                 setName(userResponse.data.name);
@@ -70,8 +70,8 @@ const MyPage = () => {
         const fetchFoodData = async () => {
             try {
                 const [menuResponse, foodResponse] = await Promise.all([
-                    axios.get('/menus'), // 메뉴 데이터
-                    axios.get('/food')  // 음식 데이터
+                    axios.get('https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/menus'), // 메뉴 데이터
+                    axios.get('https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/food')  // 음식 데이터
                 ]);
 
                 const menuMap = menuResponse.data.reduce((acc, menu) => {
@@ -102,7 +102,7 @@ const MyPage = () => {
     const updateUser = async (user) => {
         try {
             // 업데이트 API 호출
-            await axios.patch(`/users/${user.id}`, user);
+            await axios.patch(`https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/users/${user.id}`, user);
         } catch (error) {
             console.error('사용자 업데이트 실패:', error.response?.data || error.message);
             alert('사용자 정보를 업데이트하는 중 오류가 발생했습니다.');

@@ -72,7 +72,7 @@ function Register() {
 
             console.log('전송 데이터:', requestBody);
 
-            const response = await axios.post('/users', requestBody, {
+            const response = await axios.post('https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/users', requestBody, {
                 headers: {
                     'Content-Type': 'application/json',
                 },
