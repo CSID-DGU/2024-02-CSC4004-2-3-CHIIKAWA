@@ -20,8 +20,7 @@ const MyPage = () => {
     const [isNamePopupOpen, setIsNamePopupOpen] = useState(false);
     const [isFoodPopupOpen, setIsFoodPopupOpen] = useState(false);
     const [foodData, setFoodData] = useState({});
-
-    const user = JSON.parse(sessionStorage.getItem('user'));
+    const [user, setUser] = useState(JSON.parse(sessionStorage.getItem('user')));
 
     // 서버에서 사용자 정보와 음식 데이터 가져오기
     useEffect(() => {
@@ -45,6 +44,7 @@ const MyPage = () => {
                 // 사용자 정보 가져오기
                 const userResponse = await axios.get(`https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/users/${user.id}`, config);
 
+                setUser(userResponse.data);
                 setProfileImg(userResponse.data.profileimg);
                 setName(userResponse.data.name);
                 setRating(userResponse.data.rating); // 기본값 설정
@@ -109,18 +109,6 @@ const MyPage = () => {
         }
     };
 
-    const handleProfileImageChange = async (e) => {
-        const file = e.target.files[0];
-
-        if (!file) {
-            alert('파일을 선택해주세요.');
-            return;
-        }
-
-        await toBase64(file);
-        await updateUser(user);
-    };
-
     // 선호 음식 저장
     const saveFoodPreferences = async () => {
         try {
@@ -176,15 +164,56 @@ const MyPage = () => {
         }
     };
 
+    const handleProfileImageChange = async (e) => {
+        const file = e.target.files[0];
+
+        if (!file) return;
+
+        const base64 = await toBase64(file);
+
+        const body = {
+            requests: [
+                {
+                    image: {
+                        content: base64.split(',')[1], // 이미지의 Base64 데이터만 추출
+                    },
+                    features: [
+                        {
+                            type: "FACE_DETECTION", // 얼굴 감지 요청
+                        },
+                    ],},
+            ],};
+
+        const detectedData = await fetch(
+            `https://vision.googleapis.com/v1/images:annotate`,
+            {
+                method: "POST",
+                headers: new Headers({
+                    Authorization: "Bearer ya29.a0ARW5m74JgDD-tjeVb5BOaXA4JEstyFLd_5O1BTNMhqGswy6m5xUysRQAQzO3jcfQgJ4TBO-4r5g-R8jL4ulG70Vwe918UxpGMEaLms4iDK4evW4ZrcfuWJLv-AktDn8ta9EOzb2PhZ58CU4bSUG6iDi8PkA5blGpAwktZ32XzwaCgYKAdkSAQ8SFQHGX2Mi58Ynm9rc157In0HAeHBGsw0177",
+                    "x-goog-user-project": "analytical-poet-444309-q0"
+                }),
+                body: JSON.stringify(body),
+            },
+        )
+        .then(res => res.json())
+        .catch(() => false);
+
+        console.log(detectedData.responses[0]);
+
+        if (detectedData?.responses?.[0]?.faceAnnotations?.length > 0) {
+            alert("사람 얼굴은 업로드할 수 없습니다. 음식 사진을 올려주세요.");
+        } else {
+            user.profileimg = base64;
+            setProfileImg(base64);
+            await updateUser(user);
+        }
+    };
+
     const onClickLogout = () => {
         sessionStorage.removeItem('user');
         sessionStorage.removeItem('accessToken');
 
         navigate('/login');
-    }
-    
-    const onClickImageUpload = () => {
-        document.getElementById('mypage-input').click();
     }
 
     const toBase64 = (file) => new Promise((resolve, reject) => {
@@ -192,12 +221,11 @@ const MyPage = () => {
         reader.readAsDataURL(file);
         reader.onload = (e) => {
             resolve(reader.result);
-            user.profileimg = e.target.result;
-            setProfileImg(e.target.result);
-            
             console.log(e);
         }
         reader.onerror = reject;
+
+        return reader.result;
     });
 
     // 출력
@@ -205,7 +233,7 @@ const MyPage = () => {
         <div className="mypage-container">
             <Header />
             {isLoading ?
-                <div class="is-loading">
+                <div className="is-loading">
                     <span>로딩 중...</span>
                 </div>
                 :
@@ -219,13 +247,13 @@ const MyPage = () => {
                         className="profile-picture"
                         onClick={() => document.getElementById("file-input").click()}
                     />
-                        <input
-                            id="file-input"
-                            type="file"
-                            className="mypage-input"
-                            accept="image/*"
-                            onChange={handleProfileImageChange}
-                        />
+                    <input
+                        id="file-input"
+                        type="file"
+                        className="mypage-input"
+                        accept="image/*"
+                        onChange={handleProfileImageChange}
+                    />
 
                     <div className="profile-score">{rating != 0 ?
                         `평가 점수: ${rating} / 5`

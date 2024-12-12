@@ -16,6 +16,7 @@ function Login() {
             const resUser = await axios.get(`https://port-0-backend-m3s7orv656142558.sel4.cloudtype.app/users/${email}/${password}`);
             //const resChatRooms = await axios.get(`/chatrooms/login/${resUser.data.id}`);
 
+            delete resUser.data.profileimg;
             // 성공 처리
             console.log('로그인 성공:', resUser.data);
 
