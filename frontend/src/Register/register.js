@@ -11,7 +11,6 @@ function Register() {
     const [name, setName] = useState('');
     const [foodPreferences, setFoodPreferences] = useState([]);
     const [profileImg, setProfileImg] = useState();
-    const [uploadAttempts, setUploadAttempts] = useState(0); // 업로드 시도 횟수 상태 추가
     const [isPopupOpen, setIsPopupOpen] = useState(false);
     const navigate = useNavigate();
 
@@ -28,19 +27,41 @@ function Register() {
     const handleProfileImageChange = async (e) => {
         const file = e.target.files[0];
 
-        await toBase64(file);
+        if (!file) return;
 
-        if (!file) {
-            alert('파일을 선택해주세요.');
-            return;
-        }
+        const base64 = await toBase64(file);
 
-        setUploadAttempts((prev) => prev + 1);
+        const body = {
+            requests: [
+                {
+                    image: {
+                        content: base64.split(',')[1], // 이미지의 Base64 데이터만 추출
+                    },
+                    features: [
+                        {
+                            type: "FACE_DETECTION", // 얼굴 감지 요청
+                        },
+                    ],},
+            ],};
 
-        if (uploadAttempts === 0) {
-            alert('사람 얼굴이 감지되어 업로드할 수 없는 사진입니다.');
+        const detectedData = await fetch(
+            `https://vision.googleapis.com/v1/images:annotate`,
+            {
+                method: "POST",
+                headers: new Headers({
+                    Authorization: "Bearer ya29.a0ARW5m74JgDD-tjeVb5BOaXA4JEstyFLd_5O1BTNMhqGswy6m5xUysRQAQzO3jcfQgJ4TBO-4r5g-R8jL4ulG70Vwe918UxpGMEaLms4iDK4evW4ZrcfuWJLv-AktDn8ta9EOzb2PhZ58CU4bSUG6iDi8PkA5blGpAwktZ32XzwaCgYKAdkSAQ8SFQHGX2Mi58Ynm9rc157In0HAeHBGsw0177",
+                    "x-goog-user-project": "analytical-poet-444309-q0"
+                }),
+                body: JSON.stringify(body),
+            },
+        )
+        .then(res => res.json())
+        .catch(() => false);
+
+        if (detectedData?.responses?.[0]?.faceAnnotations?.length > 0) {
+            alert("사람 얼굴은 업로드할 수 없습니다. 음식 사진을 올려주세요.");
         } else {
-            console.log('이미지가 선택되었습니다:', file.name);
+            setProfileImg(base64);
         }
     };
 
@@ -97,11 +118,11 @@ function Register() {
         reader.readAsDataURL(file);
         reader.onload = (e) => {
             resolve(reader.result);
-            setProfileImg(e.target.result);
-            //document.getElementById('profileImg').src = e.target.result;
             console.log(e);
         }
         reader.onerror = reject;
+
+        return reader.result;
     });
 
     return (
