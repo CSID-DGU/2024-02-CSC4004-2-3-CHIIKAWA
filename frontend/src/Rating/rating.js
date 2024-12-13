@@ -46,9 +46,9 @@ function Rating() {
         console.log(`${opponent.name}님에게 준 점수: ${rating}점`);
         console.log(`피드백: ${feedback}`);
 
-        alert("aaa");
-        window.location.replace('/chatroom');
-        //navigate('/swipe'); // /swipe로 이동
+        // alert("aaa");
+        //window.location.replace('/chatroom');
+        navigate('/chatroom'); // /swipe로 이동
     };
 
     return (
